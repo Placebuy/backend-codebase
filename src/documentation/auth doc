@@ -1,0 +1,221 @@
+<!-- openapi: 3.0.0 -->
+info:
+  title: Delivery
+  description: Documentation For Delivery API
+  version: 1.0.0
+
+paths:
+  /api/v1/register:
+    post:
+      summary: Register a new user
+      description: Register a new user with the provided information
+      tags:
+        - Authentication
+      requestBody:
+        description: User registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                firstname:
+                  type: string
+                  description: The firstname of the new user.
+                  example: John
+                lastname:
+                  type: string
+                  description: The lastname of the new user.
+                  example: Doe
+                username:
+                  type: string
+                  description: This is gotten from the backend which is the user's firstname
+                  example: John 
+                email:
+                  type: string
+                  description: The email of the new user. Must be a valid email to send OTP for confirmation
+                  example: johndoe1980@gmail.com
+                password:
+                  type: string
+                  description: The password of the new user. Must be 8 or more characters long
+                  example: 12345678
+                phoneNumber:
+                  type: number
+                  description: The phonenumber of the new user. Must be a valid phonenumber
+                  example: 1234567890
+                image:
+                  type: string
+                  format: binary
+                  description: The image of the new user
+              required:
+                - email
+                - firstname
+                - lastname
+                - password
+                - phoneNumber
+
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              example:
+                message: Registration successful
+        '400':
+          description: User validation failed, path email or other required fields are missing
+        '500':
+          description: Internal server error
+
+  /api/v1/login:
+    post:
+      summary: User login
+      description: Authenticate a user with the provided credentials.
+      tags:
+        - Authentication
+      requestBody:
+        description: Detailed explanation of user login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the user trying to login.
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  description: The password for the user trying to login.
+                  example: "secretpassword"
+                rememberMe:
+                  type: boolean
+                  description: Flag indicating whether to remember a user or not. If set to true, the user is remembered; else the login session expires on browser close
+                  example: true
+              required:
+                - email
+                - password
+        responses:
+          '200':
+            description: User successfully logged in
+            content:
+              application/json:
+                example:
+                  message: Login successful.
+          '401':
+            description: Unauthorized, Invalid credentials
+          '500':
+            description: Internal server error
+
+
+ 
+
+  /api/v1/register-driver:
+    post:
+      summary: Register a new driver
+      description: Register a new user with the provided information
+      tags:
+        - Authentication
+      requestBody:
+        description: User registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                firstname:
+                  type: string
+                  description: The firstname of the driver.
+                  example: John
+                lastname:
+                  type: string
+                  description: The lastname of the driver.
+                  example: Doe
+                email:
+                  type: string
+                  description: The email of the driver. Must be a valid email to send OTP for confirmation
+                  example: johndoe1980@gmail.com
+                password:
+                  type: string
+                  description: The password of the new driver. Must be 8 or more characters long
+                  example: 12345678
+                phoneNumber:
+                  type: string
+                  description: The phonenumber of the driver. Must be a valid phonenumber
+                  example: 1234567890
+                image:
+                  type: string
+                  format: binary
+                  description: The image of the driver
+                vehicleType:
+                  type: string
+                  description: vehicle type of the registering driver
+                  example: motorcycle or bicycle  # Corrected typo here
+                vehiclePlateNumber:
+                  type: string
+                  description: valid vehicle plate number of the registering driver
+                  example: IM34U54
+                NIN:
+                  type: string
+                  description: Valid NIN of the registering driver
+                  example: 1234567890
+              required:
+                - email
+                - firstname
+                - password
+                - NIN
+                - vehicleType
+                - lastname
+                - phoneNumber
+
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              example:
+                message: Registration successful
+        '400':
+          description: User validation failed, path email or other required fields are missing
+        '500':
+          description: Internal server error
+
+  /api/v1/login-driver:
+    post:
+      summary: driver login
+      description: Authenticate a driver with the provided credentials.
+      tags:
+        - Authentication
+      requestBody:
+        description: Detailed explanation of driver login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the driver trying to login.
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  description: The password for the driver trying to login.
+                  example: "secretpassword"
+              required:
+                - email
+                - password
+        responses:
+          '200':
+            description: User successfully logged in
+            content:
+              application/json:
+                example:
+                  message: Login successful.
+          '401':
+            description: Unauthorized, Invalid email or password
+          '500':
+            description: Internal server error

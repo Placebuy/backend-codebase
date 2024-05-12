@@ -1,0 +1,717 @@
+
+
+// openapi: 3.0.0
+// info:
+//   title: Delivery
+//   description: Documentation For Delivery API
+//   version: 1.0.0
+
+// paths:
+//   /api/v1/register-Restaurant:
+//     post:
+//       summary: Register a new restaurant
+//       description: Register a new restaurant with the provided information
+//       tags:
+//         - Authentication
+//       requestBody:
+//         description: Restaurant registration details
+//         required: true
+//         content:
+//           application/json:
+//             schema:
+//               type: object
+//               properties: 
+//                 restaurantName:
+//                   type: string
+//                   description: The name of the restaurant
+//                   example: Munchy Crunchy
+//               required:
+//                  - restaurantName
+//       responses:
+//         '200':
+//           description: Registration successful
+//           content:
+//             application/json:
+//               example:
+//                 message: Registration successful
+//         '400':
+//           description: User validation failed, path email is required
+//         '500':
+//           description: Internal server error
+
+//   /api/v1/login-Restaurant:
+//     post:
+//       summary: Restaurant login
+//       description: Restaurant login
+//       tags:
+//         - Authentication
+//       requestBody:
+//         description: Detailed explanation of restaurant login credentials
+//         required: true
+//         content:
+//           application/json:
+//             schema:
+//               type: object
+//               properties:
+//                 email:
+//                   type: string
+//                   description: The email of the restaurant trying to login.
+//                   example: user@example.com
+//                 password:
+//                   type: string
+//                   format: password
+//                   description: The password for the restaurant trying to login.
+//                   example: "secretpassword"
+//               required:
+//                 - email
+//                 - password
+//       responses:
+//         '200':
+//           description: User successfully logged in
+//           content:
+//             application/json:
+//               example:
+//                 message: Login successful.
+//         '401':
+//           description: Unauthorized, Invalid password
+//         '404':
+//           description: Restaurant not found
+//         '500':
+//           description: Internal server error
+
+
+//   /api/v1/cart/:
+//     post:
+//       summary: Add a product to cart
+//       tags:
+//         - Cart
+//       description: Endpoint to add a product to cart
+//       requestBody:
+//         required: true
+//         content:
+//           application/json:
+//             schema:
+//               type: object
+//               properties:
+//                 productId:
+//                   type: mongoose.objectId
+//                   description: Id of the food added to card. Expected in the request body
+//                   example: 21
+//                 totalPrice:
+//                   type: number
+//                   description: total price of the product added to cart
+//                   example: 20000
+//                 quantity:
+//                   type: number
+//                   description: Total quantity of product added to cart. 
+//                   example: 2
+//       responses:
+//         '200':
+//           description: Returns count of available product in cart
+//           content:
+//             application/json:
+//               example:
+//                 message: 5
+//         '500':
+//           description: Internal server error
+
+//   /api/v1/cart/decrement:
+//     post:
+//       summary: decrements quantity of a product quantity in a cart
+//       tags:
+//         - Cart
+//       description: Endpoint to decrement a product quantity in a cart
+//       requestBody:
+//         required: true
+//         content:
+//           application/json:
+//             schema:
+//               type: object
+//               properties:
+//                 productId:
+//                   type: mongoose.objectId
+//                   description: Id of the product been decremented. Expected in the request body
+//                   example: 21
+//       responses:
+//         '200':
+//           description: Cart item decremented successfully
+//           content:
+//             application/json:
+//               example:
+//                 message: Cart item decremented successfully
+//         '500':
+//           description: Internal server error
+
+
+//   /api/v1/cart/delete:
+//     delete:
+//       summary: Remove a single product from the cart
+//       description: Remove a single product from the cart
+//       tags:
+//         - Cart
+//       parameters:
+//         - in: query
+//           name: itemId
+//           description: Id of the product to be removed from cart
+//           required: true
+//           example: 21
+//           schema:
+//             type: number
+//       responses:
+//         '200':
+//           description: Returns count of available cart items
+//           content:
+//             application/json:
+//               example:
+//                 message: 5
+//         '404':
+//           description: cart item not found
+//         '500':
+//           description: Internal server error
+
+//   /api/v1/cart:
+//     get:
+//       summary: Fetch a user cart
+//       tags:
+//         - Cart
+//       description: Endpoint to fetch a user cart
+//       responses:
+//         '200':
+//           description: Return user cart Items
+//         '500':
+//           description: Internal server error
+
+//   /api/v1/cart/count:
+//     get:
+//       summary: Get count of items in user's cart
+//       tags:
+//         - Cart
+//       description: Endpoint to get count of items in user's cart
+//       responses:
+//         '200':
+//           description: Returns count of all items in user's cart
+//           content:
+//             application/json:
+//               example:
+//                 cartCount: 5
+//         '500':
+//           description: Internal server error
+
+//   /api/v1/cart/clear:
+//     delete:
+//       summary: Clear a user cart
+//       tags:
+//         - Cart
+//       description: Endpoint to clear user cart
+//       responses:
+//         '200':
+//           description: Cart cleared
+//         '500':
+//           description: Internal server error
+         
+
+//   /api/v1/users/profile/users:
+//     get:
+//       summary: Get all user profiles
+//       description: Retrieve a list of all users in the system. This route is accessible only by administrators.
+//       tags:
+//         - Users
+//       responses:
+//         '200':
+//           description: Successful response
+//           content:
+//             application/json:
+//               example:
+//                 users:
+//                   - id: 1
+//                     username: JohnDoe
+//                     email: Johndoe@example.com
+//                     firstname: John
+//                     lastname: Doe
+//                     phonenumber: 12345678900
+//         '500':
+//           description: Internal server error
+
+  
+//   /api/v1/users/profile/{userId}:
+//     get:
+//       summary: Get a single user profile by ID
+//       description: Retrieve details of a single user based on the provided user ID.
+//       tags:
+//         - Users
+//       parameters:
+//         - in: path
+//           name: userId
+//           description: The ID of the user to retrieve.
+//           required: true
+//           schema:
+//             type: integer
+//           example: 1
+//       responses:
+//         '200':
+//           description: Successful response
+//           content:
+//             application/json:
+//               example:
+//                 users:
+//                   - id: 1
+//                     username: JohnDoe
+//                     email: Johndoe@example.com
+//                     firstname: John
+//                     lastname: Doe
+//                     phonenumber: 12345678900
+//         '400':
+//           description: Bad Request
+//         '404':
+//           description: User not found
+//         '500':
+//           description: Internal server error
+
+
+//   /api/v1/users/profile/update:
+//     patch:
+//       summary: Update a user profile
+//       description: Update the profile of the authenticated user
+//       tags:
+//         - Users
+//       paramters:
+//         - in: header
+//           name: Authorization
+//           description: Authentication token obtained during login
+//           required: true
+//           schema:
+//             type: string
+//             format: uuid
+//       requestBody:
+//         description: User profile information to update
+//         required: true
+//         content:
+//           application/json:
+//             schema:
+//               type: object
+//               properties:
+//                 username:
+//                   type: string
+//                   description: The updated username of the user
+//                   example: Johndoe11
+//                 email:
+//                   type: string
+//                   description: The updated email of the user
+//                   example: johndoe11@example.com
+//                 address:
+//                   type: string
+//                   description: The updated address of the user
+//                   example: NewYork city
+//                 phoneNumber:
+//                   type: string
+//                   description: The updated phone number of the user
+//                   example: 12345678900
+//       responses:
+//         '200':
+//           description: User profile updated successfully
+//           content:
+//             example:
+//               message: User profile updated successfully
+//         '500':
+//           description: Internal server error
+        
+
+//   /api/v1/users/profile/delete:
+//     delete:
+//       summary: Delete a user profile
+//       desccription: Delete a user profile
+//       tags:
+//         - Users
+//       parameters:
+//         - in: header
+//           name: Authorization
+//           description: Authentication token obtained during login
+//           required: true
+//           schema:
+//             type: string
+//       responses:
+//         '204':
+//           description: User profile deleted successfully
+//         '500':
+//           description: Internal server error
+          
+
+//   /api/v1/driver/:
+//     get:
+//       summary: Get all drivers
+//       description: Retrieve a list of all drivers in the system.
+//       tags:
+//         - Drivers
+//       responses:
+//         '200':
+//           description: Successful response
+//           content:
+//             application/json:
+//               example:
+//                 users:
+//                   - id: 1
+//                     username: JohnDoe
+//                     email: Johndoe@example.com
+//                     firstname: John
+//                     lastname: Doe
+//                     phonenumber: 12345678900
+//         '500':
+//           description: Internal server error
+
+  
+//   /api/v1/driver/{driverId}:
+//     get:
+//       summary: Get a single driver by ID
+//       description: Retrieve details of a single driver based on the provided user ID.
+//       tags:
+//         - Drivers
+//       parameters:
+//         - in: path
+//           name: driverId
+//           description: The ID of the driver to retrieve.
+//           required: true
+//           schema:
+//             type: integer
+//           example: 1
+//       responses:
+//         '200':
+//           description: Successful response
+//           content:
+//             application/json:
+//               example:
+//                 users:
+//                   - id: 1
+//                     username: JohnDoe
+//                     email: Johndoe@example.com
+//                     firstname: John
+//                     lastname: Doe
+//                     phonenumber: 12345678900
+//         '400':
+//           description: Bad Request
+//         '404':
+//           description: User not found
+//         '500':
+//           description: Internal server error
+
+//     put:
+//       summary: Update a driver profile
+//       description: Update the profile of the authenticated driver
+//       tags:
+//         - Drivers
+//       paramters:
+//         - in: path
+//           description: The id of the driver to update
+//           name: driverId
+//           required: true
+//           schema:
+//             type: string
+//           example: 1
+//       requestBody:
+//         description: driver profile information to update
+//         required: true
+//         content:
+//           application/json:
+//             schema:
+//               type: object
+//               properties:
+//                 firstname:
+//                   type: string
+//                   description: The updated firstname of the driver
+//                   example: Johndoe11
+//                 lastname:
+//                   type: string
+//                   description: The updated lastname of the driver
+//                   example: johndoe11@example.com
+//                 NIN:
+//                   type: string
+//                   description: The updated NIN of the driver
+//                   example: 9999999999
+//                 vehicleType:
+//                   type: string
+//                   description: The updated vehicle type of the driver
+//                   example: Lexus
+//                 vehiclePlateNumber:
+//                   type: string
+//                   description: The updated phone number of the driver
+//                   example: 12345678900
+//       responses:
+//         '200':
+//           description: User profile updated successfully
+//           content:
+//             example:
+//               message: User profile updated successfully
+//         '404':
+//           description: Driver not found
+//         '500':
+//           description: Internal server error
+      
+//     delete:
+//       summary: Delete a driver's profile
+//       desccription: Delete a driver's profile
+//       tags:
+//         - Drivers
+//       parameters:
+//         - in: path
+//           description: Id of the driver to delete
+//           name: driverId
+//           required: true
+//           schema:
+//             type: string
+//           example: 1
+//       responses:
+//         '200':
+//           description: driver deleted successfully
+//           content:
+//             application/json:
+//               example:
+//                 message: Driver deleted successfully
+//         '404':
+//           description: Driver not found
+//         '500':
+//           description: Internal server error
+
+//     patch:
+//       summary: Update driver availability
+//       description: Endpoint to update driver availability
+//       tags:
+//         - Drivers
+//       parameters:
+//         - in: path
+//           description: Id of the driver to update availability
+//           name: driverId
+//           required: true
+//           schema:
+//             type: string
+//           example: 1
+//       responses:
+//         '200':
+//           description: success response
+//           content:
+//             application/json:
+//               example:
+//                 status: true
+//         '404':
+//           description: Driver not found
+//         '500':
+//           description: Error updating driver availability
+              
+
+//   /api/v1/admin/:
+//     get:
+//       summary: Get all admins
+//       description: Retrieve a list of all admins in the system
+//       tags:
+//         - Admins
+//       responses:
+//         '200':
+//           description: Successful response
+//           content:
+//             application/json:
+//               example:
+//                 admins:
+//                   - id: 65773f4e47817155842541cb
+//                     firstname: John
+//                     lastname: Doe
+//                     username: JohnDoe
+//                     address: Washington DC
+//                     phoneNumber: 1234567890
+//                     email: johndoe@example.com
+//         '500':
+//           decsription: Internal server error
+
+
+//   /api/v1/admin/{adminId}/picture:
+//     patch:
+//       summary: Update admin profile picture
+//       description: Update admin profile picture
+//       tags:
+//         - Admins
+//       parameters:
+//         - in: path
+//           name: adminId
+//           description: The Id of the admin whose profile picture will be updated
+//           required: true
+//           schema:
+//             type: string
+//           example: 65773f4e47817155842541cb
+//       requestBody:
+//         description: Admin profile picture update
+//         required: true
+//         content:
+//           multipart/form-data:
+//             schema:
+//               type: object
+//               properties:
+//                 image:
+//                   type: string
+//                   format: binary
+//                   description: The updated profile picture file
+//       responses:
+//         '200':
+//           description: Profile picture updated successfully
+//           content:
+//             example:
+//               messgage: Profile picture updated successfully
+//         '400':
+//           description: No image file provided
+//         '500':
+//           description: Internal server error
+
+
+//   /api/v1/admin/{adminId}/delete:
+//     delete:
+//       summary: Delete an Admin
+//       description: Delete the admin with the specified ID.
+//       tags:
+//         - Admins
+//       parameters:
+//         - in: path
+//           name: adminId
+//           description: The ID of the admin to be deleted.
+//           required: true
+//           schema:
+//             type: string
+//           example: 65773f4e47817155842541cb
+//       responses:
+//         '200':
+//           description: Admin deleted successfully
+//           content:
+//             application/json:
+//               example:
+//                 message: Admin deleted successfully
+//         '404':
+//           description: Admin not found
+//         '500':
+//           description: Internal server error
+
+  
+//   /api/v1/admin/{adminId}/change-password:
+//     post:
+//       summary: Change Admin Password
+//       description: Change the password of the authenticated admin.
+//       tags:
+//         - Admins
+//       parameters:
+//         - in: path
+//           name: adminId
+//           description: The ID of the admin whose password will be changed.
+//           required: true
+//           schema:
+//             type: string
+//           example: 65773f4e47817155842541cb
+//       requestBody:
+//         description: Admin password change details
+//         required: true
+//         content:
+//           application/json:
+//             schema:
+//               type: object
+//               properties:
+//                 currentPassword:
+//                   type: string
+//                   description: The current password of the admin.
+//                 newPassword:
+//                   type: string
+//                   description: The new password for the admin.
+//       responses:
+//         '200':
+//           description: Password changed successfully
+//           content:
+//             example:
+//               message: Password changed successfully
+//         '401':
+//           description: Unauthorized, invalid current password
+//         '404':
+//           description: Admin not found
+//         '500':
+//           description: Internal server error
+
+//   /api/v1/{adminId}:
+//     get:
+//       summary: Get single Admin
+//       description: Retrieve detail of a single admin based on the provided admin Id
+//       tags:
+//         - Admins
+//       parameters:
+//         - in: path
+//           name: adminId
+//           description: The Id of the admin to retrieve
+//           required: true
+//           schema:
+//             type: string
+//           example: 65773f4e47817155842541cb
+//       responses:
+//         '200':
+//           description: Successful response
+//           content:
+//             application/json:
+//               example:
+//                 id: 65773f4e47817155842541cb
+//                 firstname: John
+//                 lastname: Doe
+//                 username: JohnDoe
+//                 address: Washington DC
+//                 phoneNumber: 1234567890
+//                 email: johndoe@example.com
+//         '404':
+//           description: Admin not found
+//         '500':
+//           description: Internal server error
+//     patch:
+//       summary: Edit admin
+//       description: Edit details of admin.
+//       tags:
+//         - Admins
+//       parameters:
+//         - in: path
+//           name: adminId
+//           description: The ID of the admin to edit.
+//           required: true
+//           schema:
+//             type: integer
+//           example: 65773f4e47817155842541cb
+//       requestBody:
+//         description: Admin details to update
+//         required: true
+//         content: 
+//           application/json:
+//             schema:
+//               type: object
+//               properties:
+//                 firstname:
+//                   type: string
+//                   description: The updated firstname of the admin
+//                   example: John
+//                 lastname:
+//                   type: string
+//                   description: The updated lastname of the admin
+//                   example: Doe
+//                 email:
+//                   type: string
+//                   description: The updated email of the admin
+//                   example: johndoe@example.com
+//                 phoneNumber:
+//                   type: string
+//                   description: The updated phonenumber of the admin
+//                   example: 1234567890
+//                 address:
+//                   type: string
+//                   description: The updated address of the admin
+//                   example: Washington DC
+//       responses:
+//         '200':
+//           description: Admin updated successfully
+//           content:
+//             application/json:
+//               example:
+//                 message: Admin updated successfully
+//         '404':
+//           description: Admin not found
+//         '500':
+//           description: Internal server error 
+              
+                
+
+
+
+

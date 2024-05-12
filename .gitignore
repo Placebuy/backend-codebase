@@ -1,0 +1,20 @@
+# Dependency Directories
+node_modules/
+
+# Environment Variables
+.env
+
+# Build Files
+/build
+
+# Log files
+*.log
+
+# Dependency lock files
+package-lock.json
+
+# OS or editor-generated files
+.DS_Store
+.vscode/
+*.sublime-project
+*.sublime-workspace
