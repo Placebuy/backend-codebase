@@ -1,0 +1,3993 @@
+const swagger = `
+openapi: 3.0.0
+info:
+  title: Delivery
+  description: Documentation For Delivery API
+  version: 1.0.0
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+
+paths:
+  /api/v1/register-Restaurant:
+    post:
+      summary: Register a new restaurant
+      description: Register a new restaurant with the provided information
+      tags:
+        - Restaurant
+      requestBody:
+        description: Restaurant registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                firstname:
+                  type: string
+                  description: The firstname of the restaurant
+                  example: Munchy Crunchy
+                lastname:
+                  type: string
+                  description: The lastname of the restaurant
+                passwowrd:
+                  type: string
+                  description: The password of the restaurant
+                email:
+                  type: string
+                  description: The email of the restaurant
+                phoneNumber:
+                  type: number
+                  description: The number of the restaurant
+                address:
+                  type: string
+                  description: The address of the restaurant
+                  example: Lagos, Nigeria
+              required:
+                 - restaurantName
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              example:
+                message: Registration successful
+        '400':
+          description: User validation failed, path email is required
+        '500':
+          description: Internal server error
+
+  /api/v1/login-Restaurant:
+    post:
+      summary: Restaurant login
+      description: Restaurant login. RememberMe if set to True, the login session lasts for 30days, else lasts for a day
+                  Password must be 8 characters long with special character and a number
+      tags:
+        - Restaurant
+      requestBody:
+        description: Detailed explanation of restaurant login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the restaurant trying to login.
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  description: The password for the restaurant trying to login.
+                  example: Delivery@1
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: User successfully logged in
+          content:
+            application/json:
+              example:
+                message: Login successful.
+        '401':
+          description: Unauthorized, Invalid password
+        '404':
+          description: Restaurant not found
+        '500':
+          description: Internal server error
+
+
+  /api/v1/menu/:
+    post:
+      summary: Add menu
+      description: This endpoint handles adding menu to. This done by the restaurant. restaurant => the restaurantId and the name => name of the menu are the two required data passed in the request body
+      tags:
+        - Restaurant
+      requestBody:
+        description: Data needed for adding a menu
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                restaurant:
+                  type: string
+                  description: The restaurant Id
+                  example: 657cadbcfcee0475a6a5a395
+                name:
+                  type: string
+                  description: The menu name
+                  example: Local foods
+      responses:
+        '200':
+          description: User successfully logged in
+          content:
+            application/json:
+              example:
+                message: Login successful.
+        '401':
+          description: Unauthorized, Invalid password
+        '404':
+          description: Restaurant not found
+        '500':
+          description: Internal server error
+
+
+  /api/v1/menu/menusrestaurant/{restaurantId}:
+    get:
+      summary: Get all menu of restaurant by resturantId
+      tags:
+        - Restaurant
+      description: Endpoint to get all restaurant menu by restaurantId
+      parameters:
+        - in: path
+          name: restaurantId
+          description: id of the restaurant to return its menu
+          required: true
+          example: 657cadbcfcee0475a6a5a395
+      responses:
+        '200':
+          description: Returns the menu of the restaurant
+          content:
+            application/json:
+              example:
+                message: Returns the menu of the restaurant
+
+  /api/v1/menu/editmenu/{id}:
+    patch:
+      summary: Edit a restaurant menu
+      description: Endpoint to edit a restaurant menu. Expects the new name of the menu in the request body.
+      tags:
+        - Restaurant
+      parameters:
+        - in: path
+          name: id
+          description: id of the restaurant to update the menu
+          required: true
+          example: 657cadbcfcee0475a6a5a395
+      requestBody:
+        description: Data needed for editing restauranst menu
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The new name of the menu
+                  example: local food
+      responses:
+      '200':
+        description: Menu updated
+        content:
+            application/json:
+              example:
+                message: Menu updated.
+      '404':
+        description: Menu not found.
+
+
+  /api/v1/menu/delete/{id}:
+    delete:
+      summary: Endpoint to delete a restaurants menu
+      description: Endpoint to delete a restaurant menu.
+      tags:
+        - Restaurant
+      parameters:
+        - in: path
+          name: id
+          description: id of the restaurant to delete its menu
+          required: true
+          example: 657cadbcfcee0475a6a5a395
+      responses:
+      '200':
+        description: Menu deleted successfully
+        content:
+            application/json:
+              example:
+                message: Menu deleted successfully
+
+  
+  /api/v1/menu/availability/{id}:
+    put:
+      summary: Endpoint to update menu availability
+      description: This endpoint handles updating a menu availability.
+      tags:
+        - Restaurant
+      parameters:
+        - in: path
+          name: id
+          description: id of the menu to toggle its availability
+          required: true
+          example: 657cadbcfcee0475a6a5a395
+      responses:
+        '200':
+          description: Menu availability updated
+          content:
+            application/json:
+              example:
+                message: Menu availability updated.
+        '404':
+          description: Menu item not found.
+
+
+  /api/v1/restaurant/:
+    get:
+      summary: Get all restaurants
+      tags:
+        - Restaurant
+      description: Endpoint to fetch all restaurant
+      responses:
+        '200':
+          description: Returns all restaurant in the database
+        '500':
+          description: Internal server error
+
+
+  /api/v1/restaurant/sorted:
+    get:
+      summary: Get all restaurants in a sorted list
+      tags:
+        - Restaurant
+      description: Endpoint to get all restaurant in sorted order, requires the users longtitue and latitude in the query parameter
+      parameters:
+        - in: query
+          name: longitude
+          description: longitude of the user
+          required: true
+          example: 12.50
+        - in: query
+          name: latitude
+          description: Latitude of the user 
+          required: true
+          example: 12.50
+      responses:
+        '200':
+          description: Returns a list of the sorted restaurants
+          content:
+            application/json:
+              example:
+                message: Returns a list of the sorted restaurants
+        '400':
+          description: Invalid coordinates
+
+
+  /api/v1/restaurant/sumRestaurants:
+    get:
+      summary: Get and sum all approved restaurants
+      tags:
+        - Restaurant
+      description: Endpoint to sum and get all approved restaurant
+      responses:
+        '200':
+          description: Returns the sum of all approved restaurants
+          content:
+            application/json:
+              example:
+                message: Returns the sum of all approved restaurants
+        '500':
+          description: Error calculating sum of approved restaurants
+
+
+  /api/v1/restaurant/available/{id}:
+    patch:
+      summary: Toggle restaurant availability
+      tags:
+        - Restaurant
+      description: Endpoint to toggle restaurant availability. Toggling off displays restaurant as closed. If toggled on, it shows the restaurant as available
+      parameters:
+        - in: path
+          name: id
+          description: id of the restaurant to toggle its avaialability  
+          required: true
+          example: 657cadbcfcee0475a6a5a395
+      responses:
+        '200':
+          description: Availability successfully toggled
+          content:
+            application/json:
+              example:
+                message: Availability successfully toggled
+        '404':
+          description: Restaurant not found
+        '401':
+          description: Restaurant is suspended
+
+
+  /api/v1/restaurant/{id}:
+    patch:
+      summary: Update restaurant details
+      tags:
+        - Restaurant
+      description: Endpoint to toggle restaurant availability
+      parameters:
+        - in: path
+          name: id
+          description: id of the restaurant to update
+          required: true
+          example: 657cadbcfcee0475a6a5a395
+      requestBody:
+        description: Data needed for adding a menu
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lastname:
+                  type: string
+                  description: The new restaurant lastname to update to
+                  example: munchy crunchy
+                firstname:
+                  type: string
+                  description: The menu name
+                  example: crunchy
+                email:
+                  type: string
+                  description: The mail of the restaurant
+                  example: delivery@gmail.com
+                phoneNumber:
+                  type: string
+                  description: The new phonenumber of the restaurant
+      responses:
+        '200':
+          description: Restaurant updated successfully
+          content:
+            application/json:
+              example:
+                message: Restaurant updated successfully
+
+
+    delete:
+      summary: Delete a restaurant by id
+      tags:
+        - Restaurant
+      description: Endpoint to delete a restaurant
+      parameters:
+        - in: path
+          name: id
+          description: id of the restaurant to delete
+          required: true
+          example: 1
+      responses:
+        '200':
+          description: Restaurant deleted successfully
+
+
+  /api/v1/restaurant/dispatchorder/{orderId}:
+    post:
+      summary: dispatch order
+      tags:
+        - Restaurant
+      description: Endpoint to change the order status to on the way. 
+      parameters:
+        - in: path
+          name: orderId
+          description: id of the order to change its order status to on the way.
+          required: true
+          example: 657cadbcfcee0475a6a5a395
+      responses:
+        '200':
+          description: Order dispatched successfully
+          content:
+            application/json:
+              example:
+                message: Order dispatched successfully
+        '404':
+          description: Order not found
+
+
+  /api/v1/restaurant/{code}:
+    get:
+      summary: Get a random restaurant using postal code
+      tags:
+        - Restaurant
+      description: Endpoint to get a random restaurant using postal code
+      parameters:
+        - in: path
+          name: code
+          description: postal code used to get the random restaurant
+          required: true
+          example: 1234
+      responses:
+        '200':
+          description: Returns the random restaurant
+          content:
+            application/json:
+              example:
+                message: Returns the random restaurant
+
+
+  /api/v1/restaurant/changepassword/{restaurantId}:
+    post:
+      summary: change restaurant password
+      tags:
+        - Restaurant
+      description: Endpoint to change a restaurant password. Required the restaurantId in the reqeust param
+      parameters:
+        - in: path
+          name: restaurantId
+          description: id of the restaurant to change it's password
+          required: true
+          example: 657cadbcfcee0475a6a5a395
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currentPassword:
+                  type: string
+                  description: The current password of the restaurant
+                  example: Delivery@1
+                newPassword:
+                  type: string
+                  description: The new password of the restaurant
+                  example: Delivery@2
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              example:
+                message: Password changed successfully
+        '404':
+          description: Restaurant not found
+        '401':
+          description: Invalid current password
+        '500':
+          description: Error changing password
+
+
+  /api/v1/restaurant/forgotpassword:
+    post:
+      summary: Forgot password
+      tags:
+        - Restaurant
+      description: Endpoint to request for password reset (Forgot password). reset link is sent to the provided email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the restaurant requesting the reset password link. 
+                  example: swifdrop@gmail.com
+      responses:
+        '200':
+          description: Email sent
+          content:
+            application/json:
+              example:
+                message: Email sent
+        '404':
+          description: email not found
+        '500':
+          description: Email couldn't be sent
+
+
+  /api/v1/restaurant/resetpassword/{resetToken}:
+    put:
+      summary: Reset password
+      tags:
+        - Restaurant
+      description: Endpoint to reset password using the reset token send the client's mail.
+      parameters:
+        - in: path
+          name: resetToken
+          description: reset token sent to the users mail
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: The email of the restaurant requesting the reset password link. 
+                  example: swifdrop@gmail.com
+      responses:
+        '201':
+          description: Password reset successfully
+          content:
+            application/json:
+              example:
+                message: Password reset successfully
+        '400':
+          description: Invalid reset token
+        '500':
+          description: Email couldn't be sent
+
+
+  /api/v1/restaurant/image/{restaurantId}:
+    put:
+      summary: update restaurant profile picture
+      tags:
+        - Restaurant
+      description: Endpoint to update restaurant profile picture
+      parameters:
+        - in: path
+          name: restaurantId
+          description: id of the restaurant to update its profile picture
+          required: true
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  description: The image file to update restaurant's profile picture
+                  format: binary
+      responses:
+        '200':
+          description: Profile picture updated successfully
+          content:
+            application/json:
+              example:
+                message: Profile picture updated successfully
+        '404':
+          description: Restaurant not found
+        '400':
+          description: No image file provided
+
+
+  /api/v1/restaurant/pending/{restaurantId}:
+    post:
+      summary: get total pending order
+      tags:
+        - Restaurant
+      description: Endpoint to get total pending order. make a post request to this endpoint to get total number of pending orders
+      parameters:
+        - in: path
+          name: restaurantId
+          description: id of the restaurant to get its total pending order
+          required: true
+      responses:
+        '200':
+          description: Returns total pending ordere
+          content:
+            application/json:
+              example:
+                message: Returns total pending order
+
+
+  /api/v1/restaurant/confirm/{restaurantId}:
+    post:
+      summary: get total confirmed order order
+      tags:
+        - Restaurant
+      description: Endpoint to get total confirmed order. make a post request to this endpoint to get total number of pending orders
+      parameters:
+        - in: path
+          name: restaurantId
+          description: id of the restaurant to get its total confirmed order
+          required: true
+      responses:
+        '200':
+          description: Returns total confirmed order
+          content:
+            application/json:
+              example:
+                message: Returns total confirmed order
+
+
+  /api/v1/restaurant/delivered/{restaurantId}:
+    post:
+      summary: get total delivered order
+      tags:
+        - Restaurant
+      description: Endpoint to get total delivered order. make a post request to thi endpoint to get total number of pending orders
+      parameters:
+        - in: path
+          name: restaurantId
+          description: id of the restaurant to get its total delivered order
+          required: true
+      responses:
+        '200':
+          description: Returns total delivered order
+          content:
+            application/json:
+              example:
+                message: Returns total delivered order
+
+
+  /api/v1/restaurant/ontheway/{restaurantId}:
+    post:
+      summary: get total order on the way to be delivered
+      tags:
+        - Restaurant
+      description: Endpoint to get total order on the way to be delivered. make a post request to thi endpoint to get total number of pending orders
+      parameters:
+        - in: path
+          name: restaurantId
+          description: id of the restaurant to get its total on the way order
+          required: true
+      responses:
+        '200':
+          description: Returns total order on the way
+          content:
+            application/json:
+              example:
+                message: Returns total order on the way
+
+
+  /api/v1/restaurant/byId/{id}:
+    get:
+      summary: Get a restaurant by id
+      tags:
+        - Restaurant
+      description: Endpoint to get a restaurant by id
+      parameters:
+        - in: path
+          name: id
+          description: id of the restaurant to return
+          required: true
+          example: 1
+      responses:
+        '200':
+          description: Returns the matching restaurant
+        '404':
+          description: Restaurant not found
+        '500':
+          description: Internal server error
+
+          
+    
+
+  /api/v1/cart/:
+    post:
+      summary: Add a product to cart
+      tags:
+        - Cart
+      description: Endpoint to add a product to cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: mongoose.objectId
+                  description: Id of the food added to card. Expected in the request body
+                  example: 65722f518b32209f2ee525e7
+                totalPrice:
+                  type: number
+                  description: total price of the product added to cart
+                  example: 20000
+                quantity:
+                  type: number
+                  description: Total quantity of product added to cart. 
+                  example: 2
+                additives:
+                  type: array
+                  description: List of additives
+                  items:
+                    type: string
+                  example:
+                    - water
+      responses:
+        '200':
+          description: Returns count of available product in cart
+          content:
+            application/json:
+              example:
+                message: 5
+        '500':
+          description: Internal server error 
+
+  
+  /api/v1/cart/decrement:
+    post:
+      summary: decrements quantity of a product quantity in a cart
+      tags:
+        - Cart
+      description: Endpoint to decrement a product quantity in a cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: mongoose.objectId
+                  description: Id of the product been decremented. Expected in the request body
+                  example: 65722f518b32209f2ee525e7
+      responses:
+        '200':
+          description: Cart item decremented successfully
+          content:
+            application/json:
+              example:
+                message: Cart item decremented successfully
+        '500':
+          description: Internal server error
+
+
+  /api/v1/cart/increment:
+    post:
+      summary: increment quantity of a product quantity in a cart
+      tags:
+        - Cart
+      description: Endpoint to increment a product quantity in a cart, requires the productId in the request body.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: mongoose.objectId
+                  description: Id of the product been decremented. Expected in the request body
+                  example: 65722f518b32209f2ee525e7
+      responses:
+        '200':
+          description: Cart item incremented successfully
+          content:
+            application/json:
+              example:
+                message: Cart item incremented successfully
+        '500':
+          description: Internal server error
+
+
+  /api/v1/cart/delete/{id}:
+    delete:
+      summary: Remove a single product from the cart
+      description: Remove a single product from the cart
+      tags:
+        - Cart
+      parameters:
+        - in: query
+          name: itemId
+          description: Id of the product to be removed from cart
+          required: true
+          example: 21
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Returns count of available cart items
+          content:
+            application/json:
+              example:
+                message: 5
+        '404':
+          description: cart item not found
+        '500':
+          description: Internal server error
+
+  /api/v1/cart:
+    get:
+      summary: Fetch a user cart
+      tags:
+        - Cart
+      description: Endpoint to fetch a user cart
+      responses:
+        '200':
+          description: Return user cart Items
+        '500':
+          description: Internal server error
+
+  /api/v1/cart/count:
+    get:
+      summary: Get count of items in user's cart
+      tags:
+        - Cart
+      description: Endpoint to get count of items in user's cart
+      responses:
+        '200':
+          description: Returns count of all items in user's cart
+          content:
+            application/json:
+              example:
+                cartCount: 5
+        '500':
+          description: Internal server error
+
+  /api/v1/cart/clear:
+    delete:
+      summary: Clear a user cart
+      tags:
+        - Cart
+      description: Endpoint to clear user cart
+      responses:
+        '200':
+          description: Cart cleared
+        '500':
+          description: Internal server error
+         
+
+
+  /api/v1/register:
+    post:
+      summary: Register a new user
+      description: Register a new user with the provided information, password must be more than 8 characters, with an uppercase character must contain a special character and a number. Phonenumber must be a valid phone number
+      tags:
+        - Users
+      requestBody:
+        description: User registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                firstname:
+                  type: string
+                  description: The firstname of the new user.
+                  example: Matthew
+                lastname:
+                  type: string
+                  description: The lastname of the new user.
+                  example: Ndubuisi
+                email:
+                  type: string
+                  description: The email of the new user. Must be a valid email to send OTP for confirmation
+                  example: ndubuisimathew18@gmail.com
+                password:
+                  type: string
+                  description: The password of the new user. Must be 8 or more characters long
+                  example: Delivery@1
+                phoneNumber:
+                  type: string
+                  description: The phonenumber of the new user. Must be a valid phonenumber
+                  example: 08116206920
+              required:
+                - email
+                - firstname
+                - lastname
+                - password
+                - phoneNumber
+      responses:
+        '201':
+          description: User registered successfully. Verification code sent to your email.
+          content:
+            application/json:
+              example:
+                message: User registered successfully. Verification code sent to your email.
+        '400':
+          description: User validation failed, path email or other required fields are missing
+        '500':
+          description: Internal server error
+
+  /api/v1/verifyaccount:
+    post:
+      summary: Verify a user account
+      description: Endpoint to verify user account. The user inserts the 4 digit code sent to their mail in the request body for verification.
+      tags:
+        - Users
+      requestBody:
+        description: User profile information to update
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The user's email address
+                  example: johndoe11@example.com 
+                verificationCode:
+                  type: string
+                  description: The verification code sent to the user's email
+                  example: 123456
+      responses:
+        '200':
+          description: Account verified successfully. You can now login.
+          content:
+            example:
+              message: Account verified successfully. You can now log in.
+        '400':
+          description: Invalid verification code.
+        '500':
+          description: Internal server error
+
+
+  /api/v1/resendcode:
+    post:
+      summary: Resend verification code
+      description: Endpoint to handle resending of verification code. This endpoint is needed when the verification code sent to the user's mail expires.
+      tags:
+        - Users
+      requestBody:
+        description: User email to resend verification code.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The user's email address
+                  example: johndoe11@example.com 
+      responses:
+        '200':
+          description: Verification code sent successfully. Check your email.
+          content:
+            example:
+              message: Verification code sent successfully. Check your email.
+        '404':
+          description: User not found.
+        '400':
+          description: User is already qualified.
+
+
+  /api/v1/login:
+    post:
+      summary: User login
+      description: Authenticate a user with the provided credentials. password must be more than 8 characters, must contain a special character and a number. When the rememberMe togggle is set to true, the user login lasts for 30 days. If not it lasts for only 8 days.
+      tags:
+        - Users
+      requestBody:
+        description: Detailed explanation of user login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the user trying to login.
+                  example: ndubuisimathew8@gmail.com
+                password:
+                  type: string
+                  format: password
+                  description: The password for the user trying to login.
+                  example: Delivery@1
+                rememberMe:
+                  type: boolean
+                  description: Flag indicating whether to remember a user or not. If set to true, the user is remembered; else the login session expires on browser close
+                  example: true
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: User successfully logged in
+          content:
+            application/json:
+              example:
+                message: Login successful.
+        '401':
+          description: Unauthorized, Invalid credentials
+        '500':
+          description: Internal server error
+
+  /api/v1/user/forgotpassword:
+    post:
+      summary: Forgot password
+      description: Endpoint to handle forgot password. The user email is needed in the request body and a mail is sent email.
+      tags:
+        - Users
+      requestBody:
+        description: User details who forgot password
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The updated email of the user
+                  example: ndubuisimathew8@gmail.com
+      responses:
+        '200':
+          description: Email sent successfully
+          content:
+            example:
+              message: User profile updated successfully
+        '404':
+          description: user not found
+        '500':
+          description: Internal server error
+
+
+  /api/v1/resetpassword/{resetToken}:
+    put:
+      summary: Reset password
+      description: This endpoint handles reset password. It expects the new password of the user. password must be more than 8 characters, must contain a special character and a number.
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: resetToken
+          description: resetToken sent to user's email
+          required: true
+          schema:
+            type: string
+          example: abc123
+      requestBody:
+        description: User details to reset password
+        required: true
+        content:
+          application/json:
+            schema:
+                password:
+                  type: string
+                  description: The new password of the user
+                  example: Delivery@4
+      responses:
+        '201':
+          description: Password reset successfully
+          content:
+            example:
+              message: password reset successfully
+        '400':
+          description: Invalid reset token
+        '500':
+          description: Internal server error
+
+
+  /api/v1/user/profile:
+    get:
+      summary: Get all user profiles
+      description: Retrieve a list of all users in the system. This route is accessible only by administrators.
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id": "658633e1f3536687b6db3156"
+                firstname": "pipppy"
+                lastname": "chinmeyw"
+                email": "emezuechimkh3@gmail.com"
+                password": "$2b$10$deGxLslpk7M/wCDKChcpH.Fth3CFhdbCpReslfZU9ymXyxmBPIFKK"
+                phoneNumber": "0901836370"
+                rememberMe": false
+                isActive": true
+                userType": "Client"
+                verificationCode": "6807"
+                isVerified": false
+                createdAt": "2023-12-23T01:12:01.391Z"
+                updatedAt": "2023-12-23T01:12:01.391Z"
+                username": "pipppy"
+                __v": 0
+        '500':
+          description: Internal server error
+
+  
+  /api/v1/user/profile/{userId}:
+    get:
+      summary: Get a single user profile by Id
+      description: Retrieve details of a single user based on the provided user ID in the url parameter. This endpoint returns the details of the user. This endpoint is only available by administrators
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: userId
+          description: The Id of the user to retrieve.
+          required: true
+          schema:
+            type: string
+          example: 6595b1053d81baa01a7a3c36
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                _id": "658633e1f3536687b6db3156"
+                firstname": "pipppy"
+                lastname": "chinmeyw"
+                email": "emezuechimkh3@gmail.com"
+                password": "$2b$10$deGxLslpk7M/wCDKChcpH.Fth3CFhdbCpReslfZU9ymXyxmBPIFKK"
+                phoneNumber": "0901836370"
+                rememberMe": false
+                isActive": true
+                userType": "Client"
+                verificationCode": "6807"
+                isVerified": false
+                createdAt": "2023-12-23T01:12:01.391Z"
+                updatedAt": "2023-12-23T01:12:01.391Z"
+                username": "pipppy"
+                __v": 0    
+        '400':
+          description: Bad Request
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+
+  /api/v1/user/{userId}/update-profile-picture:
+    patch:
+      summary: Update a user profile image
+      description: Update the profile image of the authenticated user.
+      tags:
+        - Users
+      paramters:
+        - in: header
+          name: Authorization
+          description: Authentication token obtained during login
+          required: true
+          schema:
+            type: string
+          example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1OTViMTA1M2Q4MWJhYTAxYTdhM2MzNiIsInVzZXJUeXBlIjoiQ2xpZW50IiwiaWF0IjoxNzA0MzA5NTkxLCJleHAiOjE3MDY5MDE1OTF9.IGijTHmIY_yTz4TAON7IB5NV0NAbpLX9SmyJFRvgw1E
+        - in: path
+          name: userId
+          description: Id of the user
+          required: true
+          schema:
+            type: string
+          example: 6595b1053d81baa01a7a3c36
+      requestBody:
+        description: Image of user to upload
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Profile picture updated successfully
+          content:
+            example:
+              message: Profile picture updated successfully
+
+
+  /api/v1/user/profile/update:
+    patch:
+      summary: Update a user profile
+      description: Endpoint to update a user profile information. like username, email and phonenumber. password reset endpoint handles updating of password
+      tags:
+        - Users
+      paramters:
+        - in: header
+          name: Authorization
+          description: Authentication token obtained during login
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1OTViMTA1M2Q4MWJhYTAxYTdhM2MzNiIsInVzZXJUeXBlIjoiQ2xpZW50IiwiaWF0IjoxNzA0MzA5NTkxLCJleHAiOjE3MDY5MDE1OTF9.IGijTHmIY_yTz4TAON7IB5NV0NAbpLX9SmyJFRvgw1E
+      requestBody:
+        description: User profile information to update
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The updated email of the user
+                  example: johndoe11@example.com
+                firstname:
+                  type: string
+                  description: The new firstname of the user
+                  example: Stanley
+                lastname:
+                  type: string
+                  description: The new lastname of the user
+                  example: Okafor
+                phoneNumber:
+                  type: string
+                  description: The updated phone number of the user
+                  example: 12345678900
+      responses:
+        '200':
+          description: User profile updated successfully
+          content:
+            example:
+              message: User profile updated successfully
+        '500':
+          description: Internal server error
+        
+
+  /api/v1/user/profile/delete:
+    delete:
+      summary: Delete a user profile
+      desccription: Delete a user profile
+      tags:
+        - Users
+      parameters:
+        - in: header
+          name: Authorization
+          description: Authentication token obtained during login
+          required: true
+          schema:
+            type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1OTViMTA1M2Q4MWJhYTAxYTdhM2MzNiIsInVzZXJUeXBlIjoiQ2xpZW50IiwiaWF0IjoxNzA0MzA5NTkxLCJleHAiOjE3MDY5MDE1OTF9.IGijTHmIY_yTz4TAON7IB5NV0NAbpLX9SmyJFRvgw1E
+      responses:
+        '204':
+          description: User profile deleted successfully
+        '500':
+          description: Internal server error
+        
+
+  /api/v1/user/changepassword/{userId}:
+    post:
+      summary: Endpoint to change password
+      description: Endpoint for a user to change password. It expects the current password and the new 
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: userId
+          description: Id of the user to reset
+          required: true
+          schema:
+            type: string
+          example: 6595b1053d81baa01a7a3c36
+      requestBody:
+        description: User details to reset password
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currentPassword:
+                  type: string
+                  description: The currentPassword of the user
+                  example: Deliver@2
+                newPassword:
+                  type: string
+                  description: The new password of the user
+                  example: Delivery@3
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            example:
+              message: Password changed successfully
+        '404':
+          description: User not found
+        '400':
+          description: Invalid current password
+
+
+  /api/v1/location/:
+    post:
+      summary: Create a new address
+      description: Create a new user address. Longtitude, latitute, Country, State, address and city will be sent using the google map API
+      tags:
+        - Users
+      requestBody:
+        description: Address creation payload
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: The id of the user
+                  example: 657431c3ee781283f6513043
+                longtitude:
+                  type: string
+                  description: The longtitude of the user address, to be calculated by the frontend
+                  example: 123.5
+                latitude:
+                  type: string
+                  description: The latitude of the user address
+                  example: 78.9
+                address:
+                  type: string
+                  description: The address of the user
+                  example: 123mainnw
+                country:
+                  type: string
+                  description: Country of the user
+                  example: Nigeria
+                state:
+                  type: string
+                  description: The state of the user
+                  example: Lagos
+                city:
+                  type: string
+                  description: The city of the user
+                  example: Ikeja
+                code:
+                  type: string
+                  description: The postal code of the user
+                  example: 840214
+      responses:
+        '200':
+          description: Address created 
+          content:
+            example:
+              message: Address created
+
+
+  /api/v1/location/{id}:
+    get:
+      summary: Get user addresses by user id
+      description: Get User addresses by user id
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: id
+          description: id of the user
+          required: true
+          schema:
+            type: string
+          example: 657431c3ee781283f6513043
+      responses:
+        '200':
+          description: Successful response
+          content:
+            example:
+              message: Returns user's address
+
+
+  /api/v1/location/order-address/{id}:
+    get:
+      summary: Get user order address by id
+      description: Get User order address by id
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: id
+          description: id of the address
+          required: true
+          schema:
+            type: string
+          example: 657431c3ee781283f6513043
+      responses:
+        '200':
+          description: Successful response
+          content:
+            example:
+              message: Returns the address payload
+        '404':
+          description: Address not found
+
+
+  /api/v1/register-driver:
+    post:
+      summary: Register a new driver
+      description: Register a new user with the provided information
+      tags:
+        - Drivers
+      requestBody:
+        description: User registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: 
+                firstname:
+                  type: string
+                  description: The firstname of the driver.
+                  example: John
+                lastname:
+                  type: string
+                  description: The lastname of the driver.
+                  example: Doe
+                email:
+                  type: string
+                  description: The email of the driver. Must be a valid email to send OTP for confirmation
+                  example: johndoe1980@gmail.com
+                password:
+                  type: string
+                  description: The password of the new driver. Must be 8 or more characters long
+                  example: 12345678
+                phoneNumber:
+                  type: string
+                  description: The phonenumber of the driver. Must be a valid phonenumber
+                  example: 1234567890
+                image:
+                  type: string
+                  format: binary
+                  description: The image of the driver
+                vehicleType:
+                  type: string
+                  description: vehicle type of the registering driver
+                  example: motorcycle or bicycle  # Corrected typo here
+                vehiclePlateNumber:
+                  type: string
+                  description: valid vehicle plate number of the registering driver
+                  example: IM34U54
+                NIN:
+                  type: string
+                  description: Valid NIN of the registering driver
+                  example: 1234567890
+              required:
+                - email
+                - firstname
+                - password
+                - NIN
+                - vehicleType
+                - lastname
+                - phoneNumber
+
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              example:
+                message: Registration successful
+        '400':
+          description: User validation failed, path email or other required fields are missing
+        '500':
+          description: Internal server error
+
+
+  /api/v1/login-driver:
+    post:
+      summary: driver login
+      description: Authenticate a driver with the provided credentials.
+      tags:
+        - Drivers
+      requestBody:
+        description: Detailed explanation of driver login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the driver trying to login.
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  description: The password for the driver trying to login.
+                  example: "secretpassword"
+              required:
+                - email
+                - password
+        responses:
+          '200':
+            description: User successfully logged in
+            content:
+              application/json:
+                example:
+                  message: Login successful.
+          '401':
+            description: Unauthorized, Invalid email or password
+          '500':
+            description: Internal server error
+
+
+  /api/v1/driver/:
+    get:
+      summary: Get all drivers
+      description: Retrieve a list of all drivers in the system.
+      tags:
+        - Drivers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                users:
+                  - id: 1
+                    username: JohnDoe
+                    email: Johndoe@example.com
+                    firstname: John
+                    lastname: Doe
+                    phonenumber: 12345678900
+        '500':
+          description: Internal server error
+
+
+  /api/v1/driver/{driverId}:
+    get:
+      summary: Get a single driver by ID
+      description: Retrieve details of a single driver based on the provided user ID.
+      tags:
+        - Drivers
+      parameters:
+        - in: path
+          name: driverId
+          description: The ID of the driver to retrieve.
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                users:
+                  - id: 1
+                    username: JohnDoe
+                    email: Johndoe@example.com
+                    firstname: John
+                    lastname: Doe
+                    phonenumber: 12345678900
+        '400':
+          description: Bad Request
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update a driver profile
+      description: Update the profile of the authenticated driver
+      tags:
+        - Drivers
+      paramters:
+        - in: path
+          description: The id of the driver to update
+          name: driverId
+          required: true
+          schema:
+            type: string
+          example: 1
+      requestBody:
+        description: driver profile information to update
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                  description: The updated firstname of the driver
+                  example: Johndoe11
+                lastname:
+                  type: string
+                  description: The updated lastname of the driver
+                  example: johndoe11@example.com
+                NIN:
+                  type: string
+                  description: The updated NIN of the driver
+                  example: 9999999999
+                vehicleType:
+                  type: string
+                  description: The updated vehicle type of the driver
+                  example: Lexus
+                vehiclePlateNumber:
+                  type: string
+                  description: The updated phone number of the driver
+                  example: 12345678900
+      responses:
+        '200':
+          description: User profile updated successfully
+          content:
+            example:
+              message: User profile updated successfully
+        '404':
+          description: Driver not found
+        '500':
+          description: Internal server error
+      
+    delete:
+      summary: Delete a driver's profile
+      desccription: Delete a driver's profile
+      tags:
+        - Drivers
+      parameters:
+        - in: path
+          description: Id of the driver to delete
+          name: driverId
+          required: true
+          schema:
+            type: string
+          example: 1
+      responses:
+        '200':
+          description: driver deleted successfully
+          content:
+            application/json:
+              example:
+                message: Driver deleted successfully
+        '404':
+          description: Driver not found
+        '500':
+          description: Internal server error
+
+    patch:
+      summary: Update driver availability
+      description: Endpoint to update driver availability
+      tags:
+        - Drivers
+      parameters:
+        - in: path
+          description: Id of the driver to update availability
+          name: driverId
+          required: true
+          schema:
+            type: string
+          example: 1
+      responses:
+        '200':
+          description: success response
+          content:
+            application/json:
+              example:
+                status: true
+        '404':
+          description: Driver not found
+        '500':
+          description: Error updating driver availability
+
+  /api/v1/driver/orders/:orderId/accept-and-assign:
+    post:
+      summary: Assign and accept order
+      description: Endpoint to accept and assign order
+      tags:
+        - Drivers
+      parameters:
+        - in: path
+          description: Id of the order to assign or accepted to the driver
+          name: orderId
+          required: true
+          schema:
+            type: string
+          example: 6595b1053d81baa01a7a3c36
+        - in: path
+          name: driverId
+          description: Id of the driver to assign or accept an order
+          schema:
+            type: string
+          example: 6595b1053d81baa01a7a3c36
+      responses:
+        '200':
+          description: Returns order details
+          content:
+            application/json:
+              example: Returns order details
+        '400': 
+          description: This order has already been delivered and cannot be accepted again
+        '401':
+          description: Driver not authenticated or missing ID
+
+
+  /api/v1/driver/{driverId}/order:
+    get:
+      summary: List assigned orders of a driver
+      description: Endpoint to list assigned order of a driver using the driver id
+      tags:
+        - Drivers
+      parameters:
+        - in: path
+          name: driverId
+          description: The ID of the driver to list its assigned orders.
+          required: true
+          schema:
+            type: integer
+          example: 6595b1053d81baa01a7a3c36
+      responses:
+        '200':
+          description: Successfully retrieved assigned orders for driver 
+          content:
+            application/json:
+              example: Successfully retrieved assigned orders for driver
+        '404':
+          description: No assigned orders found for this driver
+
+
+  #/api/v1/driver/{driverId}/order:
+   # patch:
+    #  summary: Update driver order status
+     # description: Endpoint to update driver order status
+     # tags:
+      #  - Drivers
+      #parameters:
+       # - in: path
+        #  name: driverId
+         # description: The ID of the driver to list its assigned orders.
+         # required: true
+         # schema:
+         #   type: integer
+         # example: 6595b1053d81baa01a7a3c36
+    #  responses:
+     #   '200':
+      #    description: Successfully retrieved assigned orders for driver 
+       #   content:
+        #    application/json:
+         #     example: Successfully retrieved assigned orders for driver
+      #  '404':
+       #   description: No assigned orders found for this driver
+
+    
+  /api/v1/register-admin:
+    post:
+      summary: Register an Admin
+      description: Register an Admin
+      tags:
+        - Admins
+      requestBody:
+        description: Admin registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                  description: The firstname of the Admin
+                  example: John
+                lastname:
+                  type: string
+                  description: The lastname of the Admin
+                  example: Doe
+                username:
+                  type: string
+                  description: This is gotten from the backend which is the user's firstname
+                  example: John 
+                email:
+                  type: string
+                  description: email of the Admin
+                  example: johndoe1980@gmail.com
+                password:
+                  type: string
+                  description: password of the Admin
+                  example: 12345678
+                phoneNumber:
+                  type: number
+                  description: phonenumber of the Admin
+                  example: 1234567890
+                address:
+                  type: string
+                  description: address of the Admin
+                  example: Washington DC
+              required:
+                - email
+                - firstname
+                - lastname
+                - password
+                - phoneNumber
+                - address
+
+      responses:
+        '201':
+          description: Admin registered successfully
+          content:
+            application/json:
+              example:
+                message: Admin registered successfully
+        '400':
+          description: Bad request, path email or other required fields are missing
+        '500':
+          description: Internal server error
+
+  /api/v1/login-admin:
+    post:
+      summary: Admin login
+      description: Authenticate an Admin with the provided credentials.
+      tags:
+        - Admins
+      requestBody:
+        description: Detailed explanation of Admin login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the Admin trying to login.
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  description: The password for the Admin trying to login.
+                  example: "secretpassword" 
+              required:
+                - email
+                - password
+        responses:
+          '200':
+            description: User successfully logged in
+            content:
+              application/json:
+                example:
+                  message: Login successful.
+          '401':
+            description: Unauthorized, Invalid credentials
+          '500':
+            description: Internal server error
+
+
+  /api/v1/admin/forgotpassword:
+    post:
+      summary: Forgot password admin
+      description: Endpoint for forgot password, Email is sent to the user's mail with resent link 
+      tags:
+        - Admins
+      requestBody:
+        description: Detailed explanation of Admin forgot password request body credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the Admin who forgot password
+                  example: user@example.com
+        responses:
+          '200':
+            description: Email sent
+            content:
+              application/json:
+                example:
+                  message: Login successful.
+          '404':
+            description: email.sent
+          '500':
+            description: Email couldnt be sent
+
+
+  /api/v1/admin/resetpassword/{resetToken}:
+    put:
+      summary: Reset admin password admin
+      description: Endpoint to reset admin password
+      tags:
+        - Admins
+      parameters:
+        - in: path
+          description: The reset Token
+          name: resetToken
+          required: true
+          schema:
+            type: string
+          example: 1123
+      requestBody:
+        description: Detailed explanation of Admin reset credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: The new password of the admin
+                  example: Delivery@2
+        responses:
+          '201':
+            description: Password reset successfully
+            content:
+              application/json:
+                example:
+                  message: Password reset successfully
+          '400':
+            description: Invalid reset token
+
+
+  #/api/v1/resetpassword/{resetToken}:
+   # put:
+    #  summary: Forgot password admin
+     # description: Endpoint for forgot password, #Email is sent to the user's mail with resent #link 
+      #tags:
+       # - Admins
+     # parameters:
+      #  - in: path
+       #   name: resetToken
+        #  description: resetToken 
+         # schema:
+          #  type: string
+      #requestBody:
+       # description: Detailed explanation of Admin #login credentials
+        #required: true
+        #content:
+         # application/json:
+          #  schema:
+           #   type: object
+            #  properties:
+             #   password:
+              #    type: string
+               #   description: The new password of #the user
+                #  example: userexample123
+        #responses:
+         # '201':
+          #  description: Password reset #successfully
+           # content:
+            #  application/json:
+             #   example:
+              #    message: Password reset #successffully
+          #'400':
+           # description: Invalid reset token
+        
+
+  /api/v1/admin/:
+    get:
+      summary: Get all admins
+      description: Retrieve a list of all admins in the system
+      tags:
+        - Admins
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                admins:
+                  - id: 65773f4e47817155842541cb
+                    firstname: John
+                    lastname: Doe
+                    username: JohnDoe
+                    address: Washington DC
+                    phoneNumber: 1234567890
+                    email: johndoe@example.com
+        '500':
+          decsription: Internal server error
+
+
+  /api/v1/admin/{adminId}/picture:
+    patch:
+      summary: Update admin profile picture
+      description: Update admin profile picture
+      tags:
+        - Admins
+      parameters:
+        - in: path
+          name: adminId
+          description: The Id of the admin whose profile picture will be updated
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      requestBody:
+        description: Admin profile picture update
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: The updated profile picture file
+      responses:
+        '200':
+          description: Profile picture updated successfully
+          content:
+            example:
+              messgage: Profile picture updated successfully
+        '400':
+          description: No image file provided
+        '500':
+          description: Internal server error
+
+
+  /api/v1/admin/{adminId}/delete:
+    delete:
+      summary: Delete an Admin
+      description: Delete the admin with the specified ID.
+      tags:
+        - Admins
+      parameters:
+        - in: path
+          name: adminId
+          description: The ID of the admin to be deleted.
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Admin deleted successfully
+          content:
+            application/json:
+              example:
+                message: Admin deleted successfully
+        '404':
+          description: Admin not found
+        '500':
+          description: Internal server error
+
+  
+  /api/v1/admin/changepassword/{adminId}:
+    post:
+      summary: Change Admin Password
+      description: Change the password of the authenticated admin.
+      tags:
+        - Admins
+      parameters:
+        - in: path
+          name: adminId
+          description: The ID of the admin whose password will be changed.
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      requestBody:
+        description: Admin password change details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currentPassword:
+                  type: string
+                  description: The current password of the admin.
+                newPassword:
+                  type: string
+                  description: The new password for the admin.
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            example:
+              message: Password changed successfully
+        '401':
+          description: Unauthorized, invalid current password
+        '404':
+          description: Admin not found
+        '500':
+          description: Internal server error
+
+  /api/v1/admin/{adminId}:
+    get:
+      summary: Get single Admin
+      description: Retrieve detail of a single admin based on the provided admin Id
+      tags:
+        - Admins
+      parameters:
+        - in: path
+          name: adminId
+          description: The Id of the admin to retrieve
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 65773f4e47817155842541cb
+                firstname: John
+                lastname: Doe
+                username: JohnDoe
+                address: Washington DC
+                phoneNumber: 1234567890
+                email: johndoe@example.com
+        '404':
+          description: Admin not found
+        '500':
+          description: Internal server error
+    patch:
+      summary: Edit admin
+      description: Edit details of admin.
+      tags:
+        - Admins
+      parameters:
+        - in: path
+          name: adminId
+          description: The ID of the admin to edit.
+          required: true
+          schema:
+            type: integer
+          example: 65773f4e47817155842541cb
+      requestBody:
+        description: Admin details to update
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                  description: The updated firstname of the admin
+                  example: John
+                lastname:
+                  type: string
+                  description: The updated lastname of the admin
+                  example: Doe
+                email:
+                  type: string
+                  description: The updated email of the admin
+                  example: johndoe@example.com
+                phoneNumber:
+                  type: string
+                  description: The updated phonenumber of the admin
+                  example: 1234567890
+                address:
+                  type: string
+                  description: The updated address of the admin
+                  example: Washington DC
+      responses:
+        '200':
+          description: Admin updated successfully
+          content:
+            application/json:
+              example:
+                message: Admin updated successfully
+        '404':
+          description: Admin not found
+        '500':
+          description: Internal server error 
+
+  /api/v1/category/:
+    post:
+      summary: Create a new category
+      tags:
+        - Admins
+      description: Endpoint to create a new category. Creating category requires admin acess. This endpoint requires an image upload, title, value 
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Title of the category been created.
+                  example: local foods 
+                value:
+                  type: string
+                  description: The value of the category been created
+                  example: Rice
+                image:
+                  type: string
+                  format: binary
+                  description: Upload image for this field
+      responses:
+        '201':
+          description: Category saved successfully
+          content:
+            application/json:
+              example:
+                message: Category saved successfully
+
+    get:
+      summary: Endpoint to get all categories
+      description: Endpoint to get all categories. This can can only be done by an admin.
+      tags:
+        - Admins
+      responses:
+        '200':
+          description: Returns a list of all categories.
+          content:
+            example:
+              message: Returns a list of all categories.
+
+
+  /api/v1/category/{id}:
+    put:
+      summary: Edit a category
+      tags:
+        - Admins
+      description: Endpoint to edit a category, expects the title and value of the category in the request body.
+      parameters:
+        - in: path
+          name: id
+          desccription: The id of the category to update
+          required: true
+          schema:
+            type: integer
+          example: 65773f4e47817155842541cb
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: The new title of the category
+                  example: local foods 
+                value:
+                  type: string
+                  description: The value of the category.
+                  example: Rice
+      responses:
+        '200':
+          description: Updated category
+          content:
+            application/json:
+              example:
+                message: Updated category
+        '404':
+          description: Category not found
+
+    delete:
+      summary: Delete a category
+      tags:
+        - Admins
+      description: Endpoint to delete a category. Required the id of the category to delete.
+      parameters:
+        - in: path
+          name: id
+          desccription: The id of the category to delete
+          required: true
+          schema:
+            type: integer
+          example: 65773f4e47817155842541cb
+      response:
+        '200':
+          description: Category deleted successfully
+        '404':
+          description: Category not found
+
+  /api/v1/category/image/{id}:
+    patch:
+      summary: Update a category image
+      tags:
+        - Admins
+      description: Endpoint to Update the category image
+      parameters:
+        - in: path
+          name: id
+          desccription: The id of the category to update
+          required: true
+          schema:
+            type: integer
+          example: 65773f4e47817155842541cb
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: The new image of the category.
+      response:
+        '200':
+          description: Category image updated successfully.
+        '404':
+          description:  Category not found
+
+
+  /api/v1/category/availability/{id}:
+    patch:
+      summary: Update a category availability
+      tags:
+        - Admins
+      description: Endpoint to Update category availability. It takes the category id in the request params.
+      parameters:
+        - in: path
+          name: id
+          description: The id of the category to update
+          required: true
+          schema:
+            type: string
+          example: 65a6d8c0fe0013d8d01e8a5d
+      responses:
+        '200':
+          description: Category availability    updated
+        '404':
+          description:  Category item not found
+
+  /api/v1/category/random:
+    get:
+      summary: Endpoint to get random categories
+      description: Endpoint to get random categories. Returns 4 random categories that its value field is not equal to more.
+      tags:
+        - Admins
+      responses:
+        '200':
+          description: Returns a list of gotten categories.
+          content:
+            example:
+              message: Returns a list of gotten categories.
+
+
+
+
+  /api/v1/register-superAdmin:
+    post:
+      summary: Register superAdmin
+      description: Register a superAdmin
+      tags:
+        - superAdmins
+      requestBody:
+        description: superAdmin registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                  description: The firstname of the Admin
+                  example: John
+                lastname:
+                  type: string
+                  description: The lastname of the Admin
+                  example: Doe
+                username:
+                  type: string
+                  description: This is gotten from the backend which is the user's firstname
+                  example: John 
+                email:
+                  type: string
+                  description: email of the Admin
+                  example: johndoe1980@gmail.com
+                password:
+                  type: string
+                  description: password of the Admin
+                  example: 12345678
+                phoneNumber:
+                  type: number
+                  description: phonenumber of the Admin
+                  example: 1234567890
+                token:
+                  type: string
+                  description: a unique token Super Admins have on registration
+                  example: 2345
+                address:
+                  type: object
+                  properties:
+                    street:
+                      type: string
+                      description: Street address
+                      example: "Washington DC 1102 USA"
+                    city:
+                      type: string
+                      description: City
+                      example: "Lagos"
+                    state:
+                      type: string
+                      description: State
+                      example: "Lagos"
+                    zipCode:
+                      type: string
+                      description: ZIP Code
+                      example: "21432"
+              required:
+                - email
+                - firstname
+                - lastname
+                - password
+                - phoneNumber
+                - token
+                - address
+
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              example:
+                message: Registration successful
+        '400':
+          description: Bad request, path email or other required fields are missing
+        '500':
+          description: Internal server error
+
+
+  /api/v1/login-superAdmin:
+    post:
+      summary: superAdmin login
+      description: Authenticate superAdmin with the provided credentials.
+      tags:
+        - superAdmins
+      requestBody:
+        description: Detailed explanation of superAdmin login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the superAdmin trying to login.
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  description: The password for the superAdmin trying to login.
+                  example: "secretpassword"
+              required:
+                - email
+                - password
+        responses:
+          '200':
+            description: Log in successful
+            content:
+              application/json:
+                example:
+                  message: Log in successful          
+          '401':
+            description: Unauthorized, Invalid credentials
+          '404':
+            description: superAdmin not found
+          '500':
+            description: Internal server error
+
+
+  /api/v1/superAdmin/:
+    get:
+      summary: Get all superAdmins
+      description: Retrieve a list of all superAdmin in the system
+      tags:
+      - superAdmins
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                superAdmins:
+                  - _id: 65a6d8c0fe0013d8d01e8a5d
+                    firstname: John
+                    lastname: Doe
+                    username: John
+                    address: Washington DC
+                    phoneNumber: 12345678901
+                    email: johndoe@example.com
+                    userType: SuperAdmin
+                    createdAt: 2024-01-16T19:28:00.618Z
+                    updatedAt: 2024-01-16T19:28:00.618Z
+        '500':
+          decsription: Internal server error
+
+
+  /api/v1/superAdmin/{superAdminId}:
+    get:
+      summary: Get single superAdmin
+      description: Retrieve detail of a single superAdmin based on the provided superAdmin Id
+      tags:
+        - superAdmins
+      parameters:
+        - in: path
+          name: superAdminId
+          description: The Id of the superAdmin to retrieve
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 65773f4e47817155842541cb
+                firstname: John
+                lastname: Doe
+                username: JohnDoe
+                address: Washington DC
+                phoneNumber: 1234567890
+                email: johndoe@example.com
+                userType: superAdmin
+        '404':
+          description: super Admin not found
+        '500':
+          description: Internal server error
+
+
+  /api/v1/superAdmin/{id}:
+    patch:
+      summary: Edit superAdmin
+      description: Edit details of superAdmin.
+      tags:
+        - superAdmins
+      parameters:
+        - in: path
+          name: id
+          description: The ID of the superAdmin to edit.
+          required: true
+          schema:
+            type: string
+            example: 65773f4e47817155842541cb
+      requestBody:
+        description: superAdmin details to update
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                  description: The updated firstname of the superAdmin
+                  example: John
+                lastname:
+                  type: string
+                  description: The updated lastname of the superAdmin
+                  example: Doe
+                email:
+                  type: string
+                  description: The updated email of the superAdmin
+                  example: johndoe@example.com
+                phoneNumber:
+                   type: string
+                   description: The updated phonenumber of the superAdmin
+                   example: 1234567890
+                address:
+                  type: string
+                  description: The updated address of the superAdmin
+                  example: Washington DC
+      responses:
+        '200':
+          description: Admin updated successfully
+          content:
+            application/json:
+              example:
+                message: Super Admin updated successfully
+        '404':
+          description: Super Admin not found
+        '500':
+          description: Internal server error
+
+
+  /api/v1/superAdmin/picture/{superAdminId}:
+    patch:
+      summary: Update superadmin profile picture
+      description: Endpoint to update superadmin profile picture. Must supply 
+      tags:
+        - superAdmins
+      parameters:
+        - in: path
+          name: superAdminId
+          description: The Id of the superAdmin to update a profile picture.
+          required: true
+          schema:
+            type: string
+            example: 65a6d8c0fe0013d8d01e8a5d
+      requestBody:
+        description: superAdmin details to update
+        required: true
+        content: 
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: The image to upload
+      responses:
+        '200':
+          description: Profile picture updated successfully
+          content:
+            application/json:
+              example:
+                message: Profile picture updated successfully
+        '400':
+          description: No image file provided.
+
+
+  /api/v1/superAdmin/changepassword/{superAdminId}:
+    post:
+      summary: Change superAdmin Password
+      description: Change the password of the authenticated superAdmin.
+      tags:
+        - superAdmins
+      parameters:
+        - in: path
+          name: superAdminId
+          description: The ID of the admin whose password will be changed.
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      requestBody:
+        description: superAdmin password change details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currentPassword:
+                  type: string
+                  description: The current password of the superAdmin.
+                newPassword:
+                  type: string
+                  description: The new password for the superAdmin.
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            example:
+              message: Password changed successfully
+        '401':
+          description: Unauthorized, invalid current password
+        '404':
+          description: super Admin not found
+        '500':
+          description: Internal server error
+
+
+  /api/v1/superAdmin/forgotpassword:
+    post:
+      summary: forgot password superAdmin
+      description: Endpoint to request forgot password for superAdmin. The reset token is sent to the specified email
+      tags:
+        - superAdmins
+      requestBody:
+        description: superAdmin forgot password request email
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the superAdmin
+      responses:
+        '200':
+          description: Email sent
+          content:
+            example:
+              message: Email sent
+        '404':
+          description: Email not found
+        '500':
+          description: Failed to send email
+
+
+  /api/v1/superAdmin/resetpassword/{resetToken}:
+    put:
+      summary: Reset super admin password
+      description: Endpoint to sreset superAdmin password using the reset token sent to the specified mail.
+      tags:
+        - superAdmins
+      parameters:
+        - in: path
+          name: resetToken
+          description: The resetToken sent to the superAdmin's mail
+          required: true
+          schema:
+            type: string
+          example: 123445
+      requestBody:
+        description: superAdmin new password details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Password:
+                  type: string
+                  description: The new password of the superAdmin.
+                  example: Delivery@3
+      responses:
+        '201':
+          description: Password reset successfully
+          content:
+            example:
+              message: Password reset successfully
+        '400':
+          description: Invalid reset token
+
+
+  /api/v1/{userId}/toggle-user-status:
+    patch:
+      summary: Activate or suspend a user
+      description: Endpoint to activate or suspend a user
+      tags:
+        - superAdmins
+      parameters:
+        - in: path
+          name: userId
+          description: The Id of the user whose account to suspend or activate
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: User activated/suspended successfully
+          required: true
+          content:
+            application/json:
+              example:
+                message: User activated/suspended successfully
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+
+  /api/v1/{driverId}/toggle-driver-status:
+    patch:
+      summary: Activate or suspend a driver
+      description: Endpoint to activate or suspend a driver
+      tags:
+        - superAdmins
+      parameters:
+        - in: path
+          name: driverId
+          description: The Id of the driver whose account to suspend or activate
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Driver activated/suspended successfully
+          required: true
+          content:
+            application/json:
+              example:
+                message: Driver activated/suspended successfully
+        '404':
+          description: Driver not found
+        '500':
+          description: Internal server error
+
+
+  /api/v1/{restaurantId}/toggle-restaurant-status:
+    patch:
+      summary: Activate or suspend a restaurant
+      description: Endpoint to activate or suspend a restaurant
+      tags:
+        - superAdmins
+      parameters:
+        - in: path
+          name: restaurantId
+          description: The Id of the restaurant account to suspend or activate
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Restaurant activated/suspended successfully
+          required: true
+          content:
+            application/json:
+              example:
+                message: Restaurant activated/suspended successfully
+        '404':
+          description: Restaurant not found
+        '500':
+          description: Internal server error
+     
+
+  /api/v1/approve-restaurant/{restaurantId}:
+    patch:
+      summary: Approve a restaurant
+      description: Endpoint to approve a restaurant
+      tags:
+        - superAdmins
+      parameters:
+        - in: path
+          name: restaurantId
+          description: The Id of the restaurant account to approve
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Restaurant successfully approved
+          required: true
+          content:
+            application/json:
+              example:
+                message: Restaurant successfully approved
+        '400':
+          description: Restaurant is already approved
+        '404':
+          description: Restaurant not found
+        '500':
+          description: Internal server error
+
+
+  /api/v1/superAdmin/delete/{superAdminId}:
+    delete:
+      summary: Delete a superAdmin
+      description: Endpoint to delete a superAdmin using the superAdminId
+      tags:
+        - superAdmins
+      parameters:
+        - in: path
+          name: superAdminId
+          description: The Id of the superAdmin
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: super Admin deleted successfully approved
+          required: true
+          content:
+            application/json:
+              example:
+                message: super Admin deleted successfully approved
+        '404':
+          description: Super Admin not found
+
+
+
+  /api/v1/approve-driver/{driverId}:
+    patch:
+      summary: Approve a driver
+      description: Endpoint to approve a driver
+      tags:
+        - superAdmins
+      parameters:
+        - in: path
+          name: driverId
+          description: The Id of the driver to approve
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Driver successfully approved
+          required: true
+          content:
+            application/json:
+              example:
+                message: Driver successfully approved
+        '400':
+          description: Driver is already approved
+        '404':
+          description: Driver not found
+        '500':
+          description: Internal server error
+
+
+  /api/v1/foods/:
+    post:
+      summary: Add a food
+      description:  |
+        This endpoint handles the addition of food to a restaurant's food list. It expects data from the body.
+
+        - **restaurant:** The ID of the restaurant adding the food.
+        - **categoryIds:** A list of category IDs to which the food belongs.
+        - **menuId:** The ID of the menu to which the food is being added.
+        - **title:** The title of the food.
+        - **price:** The price of the food.
+        - **description:** Description of the food.
+        - **isAvailable:** A boolean indicating if the food is available. If true, the food will be displayed in the restaurant's food list; if false, it won't be displayed.
+        - **discount:** Applicable if the restaurant is offering a discount or not.
+        - **additives:** A list of additives that come with the food. If optional is set to true, the user can still place the order without the additional food; if false, the user can't place an order unless they add one or two additives to the order.
+      tags:
+        - Foods
+      requestBody:
+        description: request data data for adding a food by a restaurant.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                restaurant:
+                  type: string
+                  description: The id of the restaurant adding the food
+                  example: 657cadbcfcee0475a6a5a395
+                categoryIds:
+                  type: array
+                  items:
+                    type: string
+                  description: The id of the category the food falls under.
+                  example: ["658552a6d400c6eb891f0a0c"]
+                menuId:
+                  type: string
+                  description: The id of the menu the food is coming from.
+                  example: 6584831f18e185b0783e2c0b
+                title:
+                  type: string
+                  description: The title of the food to be added. can be the food name
+                  example: Bread
+                description:
+                  type: string
+                  description:
+                  example: This is the best bread in Lagos axis
+                price:
+                  type: number
+                  format: double
+                  description: The price of the food
+                  example: 10.99
+                isAvailable:
+                  type: boolean
+                  description: Indicates whether the food is available or not
+                  example: true
+                discount:
+                  type: number
+                  description: Indicates if how much discount the restaurant is willing to offer for the food
+                  example: 10
+                additives:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: Name of the additive
+                        example: Cold water
+                      optional:
+                        type: boolean
+                        description: Indicates whether the additive is optional
+                        example: true
+      responses:
+        '200':
+          description: Food item successfully added
+          content:
+            application/json:
+              example:
+                message: Food item successfully added
+        '404':
+          description: One or more categories not found - Menu not found
+        '403':
+          description: Restaurant is suspended. Cannot add food items
+        '500':
+          description: Internal server error
+  
+
+  /api/v1/{restaurantId}/updateDiscountForAllFoods:
+    patch:
+      summary: Update discount for all food
+      description: This endpoint handles adding discount to all food by a restaurant. 
+      tags:
+        - Foods
+      parameters:
+        - in: path
+          name: restaurantId
+          description: The Id of the restaurant adding the discount
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      requestBody:
+        description: discount details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                discount:
+                  type: string
+                  description: The percentage discount the restaurant is offering
+      responses:
+        '200':
+          description: Discount updated for all foods
+          required: true
+          content:
+            application/json:
+              example:
+                message: Discount updated for all foods
+
+
+  /api/v1/foods/image/{foodId}:
+    put:
+      summary: Update discount for all food
+      description: This endpoint handles adding discount to all food by a restaurant. 
+      tags:
+        - Foods
+      parameters:
+        - in: path
+          name: foodId
+          description: The id of the food to update its food
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      requestBody:
+        description: discount details
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              format: binary
+              properties:
+                image:
+                  type: binary
+                  description: The new image to update the food with
+      responses:
+        '200':
+          description: Food item picture updated successfully
+          required: true
+          content:
+            application/json:
+              example:
+                message: Food item picture updated successfully
+        '404':
+          description: food not found
+        '400':
+          description: No image file provided
+
+
+  /api/v1/foods/sorted/:
+    get:
+      summary: Get all foods in sorted form
+      description: Endpoint to get all foods of a restaurant. Expects the longitude and latitude in the query parameter
+      tags:
+        - Foods
+      parameters:
+        - in: query
+          name: longitude
+          description: The users longtitude
+          required: true
+          schema:
+            type: string
+          example: 12345
+        - in: query
+          name: latitude
+          description: The latitude of the user
+          required: true
+          schema:
+            type: string
+          example: 12345
+      responses:
+        '200':
+          description: Returns a list of all the in sorted order
+          required: true
+          content:
+            application/json:
+              example:
+                message: Returns a list of all the in sorted order
+
+
+  /api/v1/foods/additive/{restaurantId}:
+    get:
+      summary: Get all additives by restaurant
+      description: Endpoint to get all foods of a restaurant. Expects the longitude and latitude in the query parameter
+      tags:
+        - Foods
+      parameters:
+        - in: path
+          name: restaurantId
+          description: The restaurant to get its additives
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Returns a list of all the additives of the restaurant
+          required: true
+          content:
+            application/json:
+              example:
+                message: Returns a list of all the additives of the restaurant
+        '500':
+          description: Internal server error
+
+
+
+  /api/v1/foods/restaurant/{restaurantId}:
+    get:
+      summary: Get all foods of a restaurant
+      description: Endpoint to get all foods of a restaurant
+      tags:
+        - Foods
+      parameters:
+        - in: path
+          name: restaurantId
+          description: The Id of the restaurant to get its foods
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Returns a list of all the foods items in the retaurant
+          required: true
+          content:
+            application/json:
+              example:
+                message: A list of all food in the restaurant
+        '404':
+          description: No food items for the restaurant
+        '500':
+          description: Internal server error || Error in getFoodByRestaurant
+
+
+  /api/v1/foods/{id}:
+    delete:
+      summary: Delete food by its id
+      description: Endpoint to delete a food by its id
+      tags:
+        - Foods
+      parameters:
+        - in: path
+          name: id
+          description: The id of the food to delete
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Food item deleted.
+          required: true
+          content:
+            application/json:
+              example:
+                message: Food item deleted.
+        '404':
+          description: Food item not found
+
+    patch:
+      summary: Check food availability by id and update accordingly
+      description: Endpoint to check food availability by id and update accordinlgy
+      tags:
+        - Foods
+      parameters:
+        - in: path
+          name: id
+          description: The id of the food to check its availability
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Food availability updated
+          required: true
+          content:
+            application/json:
+              example:
+                message: Food availability updated
+        '404':
+          description: food item not found
+        '500':
+          description: Internal server error
+      
+    get:
+      summary: Get food by id
+      description: Endpoint to get food by id
+      tags:
+        - Foods
+      parameters:
+        - in: path
+          name: id
+          description: The Id of the food
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Returns the food with id
+          required: true
+          content:
+            application/json:
+              example:
+                message: Returns the food with the matching id
+        '404':
+          description: Food item not found
+        '500':
+          description: Internal server error
+
+
+  /api/v1/foods/edit/{id}:
+    patch:
+      summary: Update food by id
+      description: Endpoint to food by id
+      tags:
+        - Foods
+      parameters:
+        - in: path
+          name: id
+          description: The Id of the food to update
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Food item updated
+          required: true
+          content:
+            application/json:
+              example:
+                message: Food item updated
+        '404':
+          description: Food item not found
+        '500':
+          description: Internal server error
+
+  /api/v1/foods/tags/{id}:
+    post:
+      summary: Add food tag 
+      description: Endpoint to add food tag
+      tags:
+        - Foods
+      parameters:
+        - in: path
+          name: id
+          description: The id of the food to add a tag to.
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      requestBody:
+        description: tag details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tag:
+                  type: string
+                  description: The tag to add to the food
+      responses:
+        '200':
+          description: Tag added successfully
+          content:
+            example:
+              message: Tag added successfully
+        '404':
+          description: Food item not found
+        '400':
+          description: Tag already exists
+        '500':
+          description: Internal server error
+
+  /api/v1/foods/random/{code}:
+    get:
+      summary: Get random food by code
+      description: Endpoint to get random food by code. code is the postal code of the user which is stored in the request param when a user logs in. This endpoint gets all food that matches a user's postal code and displays in the popular menu field.
+      tags:
+        - Foods
+      parameters:
+        - in: path
+          name: code
+          description: code to get random food with
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Returns details of the random food
+          required: true
+          content:
+            application/json:
+              example:
+                message: Returns details of the random food
+
+
+  /api/v1/foods/{category}/{code}:
+    get:
+      summary: Get food by category and code
+      description: Endpoint to get food by category and code. code is the postal code of the user passed in the request param when they logged in. when a user clicks on a category e.g ice cream, the endpoint gets all ice cream from different restaurant matching the user's postal code.
+      tags:
+        - Foods
+      parameters:
+        - in: path
+          name: category
+          description: cateegory to get food from
+          required: true
+          schema:
+            type: string
+          example: soup
+        - in: path
+          name: code
+          description: code to get random food with
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Returns the matching food
+          required: true
+          content:
+            application/json:
+              example:
+                message: Returns the matching food
+        '500':
+          description: Internal server error
+
+
+  /api/v1/orders/place-order:
+    post:
+      summary: Place an order
+      description: Endpoint to place an order. User needs to be authenticated to place an order
+      tags:
+        - Orders
+      requestBody:
+        description: User profile information to update
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                foodId:
+                  type: string
+                  description: The id of food the user is ordering
+                  example: 65773f4e47817155842541cb
+                quantity:
+                  type: number
+                  description: The quantity of food the user is ordering
+                  example: 1
+                price:
+                  type: number
+                  description: The price of the food the user is ordering
+                  example: 1200
+      responses:
+        '200':
+          description: Order placed successfully.
+          content:
+            example:
+              message: Order placed successfully.
+        '404':
+          description: No recent address found for the user
+        '500':
+          description: Error placing order
+
+
+  /api/v1/restaurant/confirmorder/{orderId}:
+    post:
+      summary: Confirm order
+      tags:
+        - Orders
+      description: Endpoint for restaurant to confirm order
+      parameters:
+        - in: path
+          name: orderId
+          description: id of the order
+          required: true
+          example: 657cadbcfcee0475a6a5a395
+      responses:
+        '200':
+          description: Order confirmed successfully
+          content:
+            application/json:
+              example:
+                message: Order confirmed successfully
+        '400':
+          description: Order not found
+
+
+  /api/v1/restaurant/declineorder/{orderId}:
+    post:
+      summary: Decline order
+      tags:
+        - Orders
+      description: Endpoint for restaurant to decline order
+      parameters:
+        - in: path
+          name: orderId
+          description: id of the order
+          required: true
+          example: 657cadbcfcee0475a6a5a395
+      responses:
+        '200':
+          description: Order declined successfully
+          content:
+            application/json:
+              example:
+                message: Order declined successfully
+        '400':
+          description: Order not found
+
+          
+  /api/v1/orders/{id}:
+    get:
+      summary: Get order details by id
+      description: Endpoint to get order details by id
+      tags:
+        - Orders
+      parameters:
+        - in: path
+          name: id
+          description: id of the order to get
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Returns the matching order details
+          required: true
+          content:
+            application/json:
+              example:
+                message: Returns the matching order
+        '404':
+          description: Order not found
+        '500':
+          description: Internal server error
+
+
+  /api/v1/orders/restaurantorderss/{restaurantId}:
+    get:
+      summary: get all restaurant orders
+      description: Endpoint to get restaurant orders using the restaurantId.
+      tags:
+        - Orders
+      parameters:
+        - in: path
+          name: restaurantId
+          description: id of the restaurant to get its orders
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Returns all the orders of the restaurant
+          required: true
+          content:
+            application/json:
+              example:
+                message: Returns all the orders of the restaurant
+        '404':
+          description: No orders found for the restaurant
+
+
+  /api/v1/orders/:
+    get:
+      summary: get all orders
+      description: Endpoint to get all orders
+      tags:
+        - Orders
+      responses:
+        '200':
+          description: Returns all the orders
+          required: true
+          content:
+            application/json:
+              example:
+                message: Returns all the orders 
+        '404':
+          description: No orders found
+
+
+  /api/v1/driverorders/{driverId}:
+    get:
+      summary: get all orders associated to a driver
+      description: Endpoint to get all orders associated to a driver. Using the driver'd id
+      tags:
+        - Orders
+      parameters:
+        - in: path
+          name: driverId
+          description: id of the driver to get its orders
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Returns all the orders of the driver
+          required: true
+          content:
+            application/json:
+              example:
+                message: Returns all the orders of the driver
+        '404':
+          description: No orders found for the driver
+
+
+  /api/v1/sumOrders/sum:
+    get:
+      summary: get the sum of all orders
+      description: Endpoint to get the sum of all orders
+      tags:
+        - Orders
+      responses:
+        '200':
+          description: 5
+          required: true
+          content:
+            application/json:
+              example:
+                message: 5
+        '500':
+          description: Error calculating sum of delivered orders
+
+  #/api/v1/restaurant/
+   # post:
+    #  summary: Register a new restaurant
+     # description: Endpoint to register a new #restaurant.
+      #tags:
+       # - Restaurants
+     # requestBody:
+      #  description: Details on restaurant
+       # required: true
+        #content:
+        #  application/json:
+         #   schema:
+          #    type: object
+           #   properties:
+            #    Image:
+             #     type: binary
+              #    description: The profile image #of the restaurant to be created
+               # quantity:
+                #  type: number
+                 # description: The quantity of #food the user is ordering
+                  #example: 1
+                #price:
+                 # type: number
+                  #description: The price of the #food the user is ordering
+                  #example: 1200
+      #responses:
+       # '200':
+        #  description: Order placed successfully.
+         # content:
+          #  example:
+           #   message: Order placed successfully.
+        #'404':
+         # description: No recent address found for #the user
+        #'500':
+         # description: Error placing order
+
+
+  /api/v1/company/create:
+    post:
+      summary: Create a new company
+      description: Endpoint to create a new company
+      tags:
+        - Company
+      requestBody:
+        description: Detailed explanation of Admin login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the company
+                  example: user@example.com
+                password: 
+                  type: string
+                  description: The password of the company
+                  example: Delivery@1
+                companyname:
+                  type: string
+                  descrription: The name of the company
+                  example: Delivery
+                phoneNumber:
+                  type: string
+                  description: The phonenumber of the company
+                  example: 123456789
+                address: 
+                  type: string
+                  description: The address of the company
+                  example: Lagos
+                country:
+                  type: string
+                  description: Country of company
+                  example: Nigeria
+                state:
+                  type: string
+                  description: The state of the company
+                  example: Lagos
+                city:
+                  type: string
+                  description: The city of the company
+                image:
+                  type: string
+                  description: The profile image of the company
+        responses:
+          '201':
+            description: Returns the details of the newly created company
+            content:
+              application/json:
+                example:
+                  message: Returns the details of the 
+
+
+  /api/v1/company/details/{companyId}:
+    get:
+      summary: Get details of a company by id
+      description: Endpoint to get a company details by id
+      tags:
+        - Company
+      parameters:
+        - in: path
+          name: companyId
+          description: id of the company to get
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Returns the matching company details
+          required: true
+          content:
+            application/json:
+              example:
+                message: Returns the company details
+        '404':
+          description: Company not found
+
+  /api/v1/company/edit/{companyId}:
+    put:
+      summary: Edit a company detail
+      description: Endpoint to edit a company detail
+      tags:
+        - Company
+      parameters:
+        - in: path
+          name: companyId
+          description: The id of the company to update it's details
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      requestBody:
+        description: Detailed explanation of Admin login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the company
+                  example: user@example.com
+                companyname:
+                  type: string
+                  descrription: The name of the company
+                  example: Delivery
+                phoneNumber:
+                  type: string
+                  description: The phonenumber of the company
+                  example: 123456789
+                address: 
+                  type: string
+                  description: The address of the company
+                  example: Lagos
+                country:
+                  type: string
+                  description: Country of company
+                  example: Nigeria
+                state:
+                  type: string
+                  description: The state of the company
+                  example: Lagos
+                city:
+                  type: string
+                  description: The city of the company
+        responses:
+          '201':
+            description: Returns the details of the newly created company
+            content:
+              application/json:
+                example:
+                  message: Returns the details of the newly created company
+
+  /api/v1/company/profile/picture/{companyId}:
+    put:
+      summary: Update a Company profile picture
+      description: Endpoint to update a conpany profile picture. The companyId is the id of the company
+      tags:
+        - Company
+      parameters:
+        - in: path
+          name: companyId
+          description: id of the company to update its picture
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      requestBody:
+        description: Image to update
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  description: The image to update.
+      responses:
+        '200':
+          description: Profile picture updated successfully.
+          required: true
+          content:
+            application/json:
+              example:
+                message: Profile picture updated  details
+        '400':
+          description: No image file provided
+
+
+  /api/v1/company/forgotpassword:
+    post:
+      summary: Company forgot password
+      description: This endpoint handles company forgot password. It needs the email in the request body and sends the reset url to the company email.
+      tags:
+        - Company
+      requestBody:
+        description: Image to update
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The company email where the reset link will be sent.
+      responses:
+        '200':
+          description: Email sent.
+          required: true
+          content:
+            application/json:
+              example:
+                message: Email sent.
+        '404':
+          description: Email.sent
+        '500':
+          description: Email could not be sent
+
+
+  /api/v1/company/resetpassword/{resetToken}:
+    put:
+      summary: Company Reset password endpoint
+      description: This endpoint handles company reset password. It expects the password in the request body and the resetToken in the params.
+      tags:
+        - Company
+      parameters:
+        - in: path
+          name: resetToken
+          description: resetToken to reset password with.
+          required: true
+          schema:
+            type: string
+          example: 12345
+      requestBody:
+        description: Image to update
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: The new passowrd of the company.
+      responses:
+        '201':
+          description: Password reset successfully.
+          required: true
+          content:
+            application/json:
+              example:
+                message: Password reset successfully.
+        '400':
+          description: Invalid reset token.
+        
+
+  /api/v1/company/changepassword/{companyId}:
+    post:
+      summary: Company change password endpoint
+      description: This endpoint handles company change password. It expects the currentPassword and newPassword in the request body and the companyId in the params.
+      tags:
+        - Company
+      parameters:
+        - in: path
+          name: companyId
+          description: The id of the company reseting its password
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      requestBody:
+        description: Image to update
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currentPassword:
+                  type: string
+                  description: The current password of the company
+                  example: Delivery@1
+                newPassword:
+                  type: string
+                  description: The new passowrd of the company.
+                  example: Delivery@2
+      responses:
+        '200':
+          description: Password changed successfully.
+          required: true
+          content:
+            application/json:
+              example:
+                message: Password reset successfully.
+        '401':
+          description: Invalid current password
+
+
+  /api/v1/transaction/:
+    get:
+      summary: Get all transactions
+      tags:
+        - Transaction
+      description: Endpoint to get all transaction
+      responses:
+        '200':
+          description: Returns the list of all transactions
+          content:
+            application/json:
+              example:
+                message: Returns the list of all transactions
+
+
+  /api/v1/transaction/initialize:
+    post:
+      summary: Initialize paystack transaction
+      description: This endpoint handles initializing paystack transaction. Expects the orderId in the request body.
+      tags:
+        - Transaction
+      requestBody:
+        description: Order id
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  description: The Id of the order
+                  example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Returns the response data
+          required: true
+          content:
+            application/json:
+              example:
+                message: Returns the response data
+        '400':
+          description: Order not found
+        '500':
+          description: Internal server error
+
+
+  /api/v1/rating/:
+    post:
+      summary: submit a food rating
+      description: Endpoint to submit a food rading. Expects the userId, foodId and rating in the request body. A rating is invalid if its less than 1 or greater than 5
+      tags:
+        - Ratings
+      requestBody:
+        description: The body of the request
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: The id of the user giving the rating
+                  example: 6595b1053d81baa01a7a3c36
+                foodId: 
+                  type: string
+                  description: id of the food to rate
+                  example: 65773f4e47817155842541cb
+                rating:
+                  type: string
+                  descrription: The rating given to the food
+                  example: 5
+        responses:
+          '201':
+            description: Rating submitted successfully 
+            content:
+              application/json:
+                example:
+                  message: Rating submitted successfully 
+          '400':
+            description: Invalid rating value
+
+
+  /api/v1/rating/averagerating/{foodId}:
+    get:
+      summary: get food average rating
+      description: Endpoint to get food average rating
+      tags:
+        - Ratings
+      parameters:
+        - in: path
+          name: foodId
+          description: id of the food to get its average rating
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Returns the average food ratings
+          required: true
+          content:
+            application/json:
+              example:
+                message: Returns the average food ratings
+        '404':
+          description: No ratings found for this food
+
+
+  /api/v1/rating/restaurant/{restaurantId}:
+    get:
+      summary: get restaurant rating
+      description: Endpoint to get restaurant rating
+      tags:
+        - Ratings
+      parameters:
+        - in: path
+          name: restaurantId
+          description: id of the restaurant to get its rating
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Returns the restaurant ratings
+          required: true
+          content:
+            application/json:
+              example:
+                message: Returns the restaurant ratings
+        '404':
+          description: No ratings found for this restaurant
+`
+
+module.exports = swagger;

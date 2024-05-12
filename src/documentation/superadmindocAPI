@@ -1,0 +1,104 @@
+ /api/v1/register-superAdmin:
+    post:
+      summary: Register superAdmin
+      description: Register a superAdmin
+      tags:
+        - Authentication
+      requestBody:
+        description: superAdmin registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                  description: The firstname of the Admin
+                  example: John
+                lastname:
+                  type: string
+                  description: The lastname of the Admin
+                  example: Doe
+                 username:
+                  type: string
+                  description: This is gotten from the backend which is the user's firstname
+                  example: John 
+                email:
+                  type: string
+                  description: email of the Admin
+                  example: johndoe1980@gmail.com
+                password:
+                  type: string
+                  description: password of the Admin
+                  example: 12345678
+                phoneNumber:
+                  type: number
+                  description: phonenumber of the Admin
+                  example: 1234567890
+                token:
+                  type: string
+                  description: a unique token Super Admins have on registration
+                address:
+                  type: string
+                  description: address of the Admin
+                  example: Washington DC 1102 USA 
+              required:
+                - email
+                - firstname
+                - lastname
+                - password
+                - phoneNumber
+                - token
+                - address
+
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              example:
+                message: Registration successful
+        '400':
+          description: Bad request, path email or other required fields are missing
+        '500':
+          description: Internal server error
+  /api/v1/login-superAdmin:
+    post:
+      summary: superAdmin login
+      description: Authenticate superAdmin with the provided credentials.
+      tags:
+        - Authentication
+      requestBody:
+        description: Detailed explanation of superAdmin login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the superAdmin trying to login.
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  description: The password for the superAdmin trying to login.
+                  example: "secretpassword"
+              required:
+                - email
+                - password
+        responses:
+          '200':
+            description: Log in successful
+            content:
+              application/json:
+                example:
+                  message: Log in successful          
+          '401':
+            description: Unauthorized, Invalid credentials
+          '404':
+            description: superAdmin not found
+          '500':
+            description: Internal server error

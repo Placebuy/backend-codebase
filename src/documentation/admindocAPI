@@ -1,0 +1,321 @@
+ 
+  /api/v1/register-admin:
+    post:
+      summary: Register an Admin
+      description: Register an Admin
+      tags:
+        - Authentication
+      requestBody:
+        description: Admin registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                  description: The firstname of the Admin
+                  example: John
+                lastname:
+                  type: string
+                  description: The lastname of the Admin
+                  example: Doe
+                 username:
+                  type: string
+                  description: This is gotten from the backend which is the user's firstname
+                  example: John 
+                email:
+                  type: string
+                  description: email of the Admin
+                  example: johndoe1980@gmail.com
+                password:
+                  type: string
+                  description: password of the Admin
+                  example: 12345678
+                phoneNumber:
+                  type: number
+                  description: phonenumber of the Admin
+                  example: 1234567890
+                address:
+                  type: string
+                  description: address of the Admin
+                  example: Washington DC
+              required:
+                - email
+                - firstname
+                - lastname
+                - password
+                - phoneNumber
+                -address
+
+      responses:
+        '201':
+          description: Admin registered successfully
+          content:
+            application/json:
+              example:
+                message: Admin registered successfully
+        '400':
+          description: Bad request, path email or other required fields are missing
+          "code": 400,
+    "message": "Admin already exists"
+        '500':
+          description: Internal server error
+
+  /api/v1/login-admin:
+    post:
+      summary: Admin login
+      description: Authenticate an Admin with the provided credentials.
+      tags:
+        - Authentication
+      requestBody:
+        description: Detailed explanation of Admin login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the Admin trying to login.
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  description: The password for the Admin trying to login.
+                  example: "secretpassword"
+                
+              required:
+                - email
+                - password
+        responses:
+          '200':
+            description: User successfully logged in
+            content:
+              application/json:
+                example:
+                  message: Login successful.
+          '401':
+            description: Unauthorized, Invalid credentials
+          '500':
+            description: Internal server error
+ /api/v1/admin/:
+    get:
+      summary: Get all admins
+      description: Retrieve a list of all admins in the system
+      tags:
+        - Admins
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                admins:
+                  - id: 65773f4e47817155842541cb
+                    firstname: John
+                    lastname: Doe
+                    username: JohnDoe
+                    address: Washington DC
+                    phoneNumber: 1234567890
+                    email: johndoe@example.com
+        '500':
+          decsription: Internal server error
+
+
+  /api/v1/admin/{adminId}/picture:
+    patch:
+      summary: Update admin profile picture
+      description: Update admin profile picture
+      tags:
+        - Admins
+      parameters:
+        - in: path
+          name: adminId
+          description: The Id of the admin whose profile picture will be updated
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      requestBody:
+        description: Admin profile picture update
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: The updated profile picture file
+      responses:
+        '200':
+          description: Profile picture updated successfully
+          content:
+            example:
+              messgage: Profile picture updated successfully
+        '400':
+          description: No image file provided
+        '500':
+          description: Internal server error
+
+
+  /api/v1/admin/{adminId}/delete:
+    delete:
+      summary: Delete an Admin
+      description: Delete the admin with the specified ID.
+      tags:
+        - Admins
+      parameters:
+        - in: path
+          name: adminId
+          description: The ID of the admin to be deleted.
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Admin deleted successfully
+          content:
+            application/json:
+              example:
+                message: Admin deleted successfully
+        '404':
+          description: Admin not found
+        '500':
+          description: Internal server error
+
+  
+  /api/v1/admin/{adminId}/change-password:
+    post:
+      summary: Change Admin Password
+      description: Change the password of the authenticated admin.
+      tags:
+        - Admins
+      parameters:
+        - in: path
+          name: adminId
+          description: The ID of the admin whose password will be changed.
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      requestBody:
+        description: Admin password change details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currentPassword:
+                  type: string
+                  description: The current password of the admin.
+                newPassword:
+                  type: string
+                  description: The new password for the admin.
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            example:
+              message: Password changed successfully
+        '401':
+          description: Unauthorized, invalid current password
+        '404':
+          description: Admin not found
+        '500':
+          description: Internal server error
+
+  /api/v1/{adminId}:
+    get:
+      summary: Get single Admin
+      description: Retrieve detail of a single admin based on the provided admin Id
+      tags:
+        - Admins
+      parameters:
+        - in: path
+          name: adminId
+          description: The Id of the admin to retrieve
+          required: true
+          schema:
+            type: string
+          example: 65773f4e47817155842541cb
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 65773f4e47817155842541cb
+                firstname: John
+                lastname: Doe
+                username: JohnDoe
+                address: Washington DC
+                phoneNumber: 1234567890
+                email: johndoe@example.com
+        '404':
+          description: Admin not found
+        '500':
+          description: Internal server error
+    patch:
+      summary: Edit admin
+      description: Edit details of admin.
+      tags:
+        - Admins
+      parameters:
+        - in: path
+          name: adminId
+          description: The ID of the admin to edit.
+          required: true
+          schema:
+            type: integer
+          example: 65773f4e47817155842541cb
+      requestBody:
+        description: Admin details to update
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                  description: The updated firstname of the admin
+                  example: John
+                lastname:
+                  type: string
+                  description: The updated lastname of the admin
+                  example: Doe
+                email:
+                  type: string
+                  description: The updated email of the admin
+                  example: johndoe@example.com
+                phoneNumber:
+                  type: string
+                  description: The updated phonenumber of the admin
+                  example: 1234567890
+                address:
+                  type: string
+                  description: The updated address of the admin
+                  example: Washington DC
+      responses:
+        '200':
+          description: Admin updated successfully
+          content:
+            application/json:
+              example:
+                message: Admin updated successfully
+        '404':
+          description: Admin not found
+        '500':
+          description: Internal server error 
+              
+                
+
+
+
