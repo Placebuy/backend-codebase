@@ -7,3 +7,4 @@ module.exports.companyValidation = require('./companyValidation.js');
 module.exports.transactionValidation = require('./transactionValidation.js');
 module.exports.addressValidation = require('./addressValidation.js');
 module.exports.orderValidation = require('./orderValidation.js');
+module.exports.produdctValidation = require('./productValidation.js');

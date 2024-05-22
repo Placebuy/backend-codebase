@@ -5,19 +5,17 @@ const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema(
   {
-    firstName: {
+    fullName: {
       type: String,
-      required: true,
+      //required: true,
+      trim: true,
+      minLength: [3, 'Minimum length must be 3'],
     },
-    lastName: {
-      type: String,
-      required: true,
-    },
-    brandName: { type: String,
+    businessName: { type: String,
       //required: true,
       unique: true,
     },
-    brandImage: String,
+    image: String,
     email: {
       type: String,
       required: true,
@@ -35,7 +33,7 @@ const userSchema = new mongoose.Schema(
     phoneNumber: {
       type: String,
       unique: true,
-      required: true,
+      //required: true,
       minLength: [10, 'Minimum length must be 10'],
     },
     password: {
@@ -51,7 +49,7 @@ const userSchema = new mongoose.Schema(
         select: false,
       },
     },
-    campus: String,
+    institution: String,
     address: String,
     /**resetPasswordToken: {
       type: String,
@@ -68,6 +66,7 @@ const userSchema = new mongoose.Schema(
     otp: {
       type: String,
       select: false,
+      expires: 600,
     },
     userType: {
       type: String,
