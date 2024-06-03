@@ -66,7 +66,7 @@ const getProductById = Asyncly(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
   }
   // const reviews = await Review.find({ productId: productId }).exec();
-  const { metadata, results } = await paginate(Review, req, {}, { productId });
+  const { metadata, results } = await paginate(Review, req, { productId });
   const reviews = {
     result: [{ metadata }, ...results],
   };

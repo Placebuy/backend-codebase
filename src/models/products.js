@@ -67,22 +67,24 @@ productSchema.post(/^findOne/, async function (doc, next) {
       productId: doc._id,
     });
     if (totalReviews !== doc.reviewTotal) {
-      await this.findByIdAndUpdate(doc._id, { reviewTotal: totalReviews, __updatedByHook: true });
-      
+      await doc.constructor.findByIdAndUpdate(doc._id, {
+        reviewTotal: totalReviews,
+        __updatedByHook: true,
+      });
     }
     next();
   }
 });
 
-// Pre-save hook to capitalize the first letter of the title field
-// productSchema.pre('save', function (next) {
-//   // Check if the title field exists and is a string
-//   if (this.title && typeof this.title === 'string') {
-//     // Convert the first letter to uppercase
-//     this.title = this.title.charAt(0).toUpperCase() + this.title.slice(1);
-//   }
-//   next();
-// });
+//Pre-save hook to capitalize the first letter of the title field
+productSchema.pre('save', function (next) {
+  // Check if the title field exists and is a string
+  if (this.title && typeof this.title === 'string') {
+    // Convert the first letter to uppercase
+    this.title = this.title.charAt(0).toUpperCase() + this.title.slice(1);
+  }
+  next();
+});
 
 module.exports = mongoose.model('Product', productSchema);
 
