@@ -1,6 +1,9 @@
 const express = require('express');
 
 const authRoute = require('./auth');
+const productRoute = require('./products');
+const reviewRoute = require('./reviews');
+const cartsRoute = require('./carts');
 // const adminRoute = require('./adminRoute');
 // const cartRoute = require('./cartRoute');
 // const categoriesRoute = require('./categoriesRoute');
@@ -19,27 +22,26 @@ const authRoute = require('./auth');
 // const restaurantWalletRoute = require('./restaurantWalletRoute');
 // const walletRoute = require('./walletRoute');
 
-
 const router = express.Router();
 
 const defaultRoutes = [
-	{
-		path: '/auth',
-		route: authRoute,
-	},
-	/**{
-		path: '/restaurant',
-		route: restaurantRoute,
-	},
-	{
-		path: '/menu',
-		route: menuRoute,
-	},
-	{
-		path: '/category',
-		route: categoriesRoute,
-	},
-	{
+  {
+    path: '/auth',
+    route: authRoute,
+  },
+  {
+    path: '/products',
+    route: productRoute,
+  },
+  {
+    path: '/reviews',
+    route: reviewRoute,
+  },
+  {
+    path: '/carts',
+    route: cartsRoute,
+  },
+  /**{
 		path: '/user',
 		route: userRoute,
 	},
@@ -98,7 +100,7 @@ const defaultRoutes = [
 ];
 
 defaultRoutes.forEach((route) => {
-	router.use(route.path, route.route);
+  router.use(route.path, route.route);
 });
 
 module.exports = router;

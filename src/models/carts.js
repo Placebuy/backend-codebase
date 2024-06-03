@@ -25,7 +25,7 @@ const cartSchema = new mongoose.Schema(
       ref: 'Buyer',
     },
     items: [cartItemSchema],
-    totalQuantity: {
+    totalItems: {
       type: Number,
       default: 0,
     },
@@ -38,5 +38,7 @@ const cartSchema = new mongoose.Schema(
 );
 
 const Cart = mongoose.model('Cart', cartSchema);
+
+
 
 module.exports = Cart;

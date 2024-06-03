@@ -18,10 +18,6 @@ const reviewSchema = new mongoose.Schema(
       min: 1,
       max: 5,
     },
-    ratingTotal: {
-      type: Number,
-      default: 0,
-    },
     comment: {
       type: String,
       required: true,
@@ -33,13 +29,6 @@ const reviewSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
-
-reviewSchema.post(/^find/, async function (docs) {
-  for (const doc of docs) {
-    const totalReviews = await this.model.countDocuments({productId: doc.productId})
-    await this.model.updateOne({productId: doc.productId}, {ratingTotal: totalReviews})
-  }
-})
 
 const Review = mongoose.model('Review', reviewSchema);
 

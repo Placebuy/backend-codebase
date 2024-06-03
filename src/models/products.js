@@ -3,10 +3,10 @@ const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema(
   {
-		vendor: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Seller',
-		},
+    vendor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
     title: {
       type: String,
       required: true,
@@ -24,7 +24,7 @@ const productSchema = new mongoose.Schema(
     },
     availableUnits: {
       type: Number,
-      default: 0,
+      default: 1,
     },
     image: {
       type: String,
@@ -33,7 +33,15 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-		/**discount: {
+    type: {
+      type: String,
+      enum: ['new', 'used'],
+    },
+    reviewTotal: {
+      type: Number,
+      default: 0,
+    },
+    /**discount: {
       type: Number,
       default: null,
       min: 0,
@@ -43,7 +51,32 @@ const productSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-// Pre-save hook to capitalize the first letter of the title field
+productSchema.pre('save', function (next) {
+  // Check if the title field exists and is a string
+  if (this.title && typeof this.title === 'string') {
+    // Convert the first letter to uppercase
+    this.title = this.title.charAt(0).toUpperCase() + this.title.slice(1);
+  }
+  next();
+});
+
+productSchema.post(/^findOne/, async function (doc, next) {
+  if (doc && !doc.__updatedByHook) {
+    const Review = mongoose.model('Review');
+    const totalReviews = await Review.countDocuments({
+      productId: doc._id,
+    });
+    if (totalReviews !== doc.reviewTotal) {
+      await doc.constructor.findByIdAndUpdate(doc._id, {
+        reviewTotal: totalReviews,
+        __updatedByHook: true,
+      });
+    }
+    next();
+  }
+});
+
+//Pre-save hook to capitalize the first letter of the title field
 productSchema.pre('save', function (next) {
   // Check if the title field exists and is a string
   if (this.title && typeof this.title === 'string') {
@@ -54,3 +87,15 @@ productSchema.pre('save', function (next) {
 });
 
 module.exports = mongoose.model('Product', productSchema);
+
+// productSchema.virtual('reviews', {
+//   ref: 'Review',
+//   localField: '_id',
+//   foreignField: 'productId',
+// });
+
+// productSchema.set('toObject', { virtuals: true });
+// productSchema.set('toJSON', { virtuals: true });
+
+// module.exports = mongoose.model('Product', productSchema);
+//  const product = await Product.findById(productId).populate('reviews').exec();
