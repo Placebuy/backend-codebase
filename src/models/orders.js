@@ -76,6 +76,20 @@ const orderSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  paid: {
+    type: Boolean,
+    default: false,
+  },
+  paymentOption: {
+    type: String,
+    enum: ['onDelivery', 'beforeDelivery'],
+    required: true,
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['Card', 'Transfer', 'Cash'],
+    required: true,
+  },
 });
 
 orderSchema.pre('save', async function (next) {
@@ -86,7 +100,7 @@ orderSchema.pre('save', async function (next) {
       const orderId = `PB${objectId
         .toHexString()
         .substring(0, 8)}${randomComponent.toString().padStart(3, '0')}`;
-      this.orderId = orderId
+      this.orderId = orderId;
       //console.log('Generated orderId:', this.orderId);
     }
     this.markModified('orderId');

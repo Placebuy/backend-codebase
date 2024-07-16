@@ -72,7 +72,10 @@ const getUserCart = Asyncly(async (req, res) => {
   const userId = req.user.id;
   const cart = await Cart.findOne({ buyerId: userId });
   if (!cart) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Your cart is empty. Add products to cart to view them here.');
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      'Your cart is empty. Add products to cart to view them here.',
+    );
   }
   return res.status(httpStatus.OK).json(cart);
 });
@@ -90,7 +93,10 @@ const updateUsercart = Asyncly(async (req, res) => {
   const cart = await Cart.findOne({ buyerId: userId });
 
   if (!cart) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Your cart is empty. Add products to cart to view them here.');
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      'Your cart is empty. Add products to cart to view them here.',
+    );
   }
   const { productId, quantity } = cartItem;
   const product = await Product.findById(productId);
@@ -138,7 +144,10 @@ const removeProductFromCart = Asyncly(async (req, res) => {
   const cart = await Cart.findOne({ buyerId: userId });
 
   if (!cart) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Your cart is empty. Add products to cart to view them here.');
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      'Your cart is empty. Add products to cart to view them here.',
+    );
   }
   const itemIndex = cart.items.findIndex((item) =>
     item.productId.equals(productId),
@@ -185,7 +194,10 @@ const decrementProductQty = Asyncly(async (req, res) => {
   const cart = await Cart.findOne({ buyerId: userId });
 
   if (!cart) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Your cart is empty. Add products to cart to view them here.');
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      'Your cart is empty. Add products to cart to view them here.',
+    );
   }
   const itemIndex = cart.items.findIndex((item) =>
     item.productId.equals(productId),
@@ -204,8 +216,77 @@ const decrementProductQty = Asyncly(async (req, res) => {
     }
     throw new ApiError(httpStatus.BAD_REQUEST, 'Minimum quantity reached');
   }
-	throw new ApiError(httpStatus.NOT_FOUND, 'Product not found in cart');
+  throw new ApiError(httpStatus.NOT_FOUND, 'Product not found in cart');
 });
+
+// Revisit this code
+const mergeCarts = async (req, res) => {
+  try {
+    const guestCartItems = req.body.cartItems; // Assuming guest cart items are sent in the request body
+    const userId = req.user.id; // Assuming user is authenticated and user id is available in the request
+
+    // Retrieve user's cart
+    const userCart = await Cart.findOne({ buyerId: userId });
+
+    // If user has a cart, merge guest cart items
+    if (userCart) {
+      guestCartItems.forEach(async (guestCartItem) => {
+        const { productId, quantity } = guestCartItem;
+
+        // Check if product already exists in user's cart
+        const existingItemIndex = userCart.items.findIndex((item) =>
+          item.productId.equals(productId),
+        );
+
+        if (existingItemIndex > -1) {
+          // If product already exists, update quantity
+          userCart.items[existingItemIndex].quantity += quantity;
+        } else {
+          // If product doesn't exist, add it to user's cart
+          userCart.items.push({ productId, quantity });
+        }
+      });
+
+      // Recalculate total items and total price
+      userCart.totalItems = userCart.items.length;
+      userCart.totalPrice = userCart.items.reduce(
+        (acc, item) => acc + item.quantity * item.price,
+        0,
+      );
+
+      // Save the updated user cart
+      await userCart.save();
+
+      return res
+        .status(httpStatus.OK)
+        .json({ message: 'Guest cart merged successfully' });
+    } else {
+      // If user does not have a cart, create one and add guest cart items
+      const newCart = new Cart({
+        buyerId: userId,
+        items: guestCartItems,
+        totalItems: guestCartItems.length,
+        totalPrice: guestCartItems.reduce(
+          (acc, item) => acc + item.quantity * item.price,
+          0,
+        ),
+      });
+
+      // Save the new cart
+      await newCart.save();
+
+      return res
+        .status(httpStatus.CREATED)
+        .json({ message: 'Guest cart merged successfully' });
+    }
+  } catch (error) {
+    // Handle any errors
+    console.error(error);
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({ error: 'Internal server error' });
+  }
+};
 
 module.exports = {
   addProductToCart,

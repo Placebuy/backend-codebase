@@ -93,6 +93,7 @@ const verifyAccount = Asyncly(async (req, res) => {
 
   // Update the user's verification status
   user.isVerified = true;
+  user.isActive = true;
   await user.save();
 
   return res.status(httpStatus.OK).json({

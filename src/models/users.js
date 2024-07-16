@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema(
     },
     businessName: { type: String,
       //required: true,
-      unique: true,
+      // unique: true,
     },
     image: String,
     email: {
@@ -61,7 +61,7 @@ const userSchema = new mongoose.Schema(
     },
     isActive: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     otp: {
       type: String,

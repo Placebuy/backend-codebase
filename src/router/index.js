@@ -4,6 +4,7 @@ const authRoute = require('./auth');
 const productRoute = require('./products');
 const reviewRoute = require('./reviews');
 const cartsRoute = require('./carts');
+const waitlistRoute = require('./waitlist');
 // const adminRoute = require('./adminRoute');
 // const cartRoute = require('./cartRoute');
 // const categoriesRoute = require('./categoriesRoute');
@@ -41,11 +42,11 @@ const defaultRoutes = [
     path: '/carts',
     route: cartsRoute,
   },
-  /**{
-		path: '/user',
-		route: userRoute,
+  {
+		path: '/waitlist',
+		route: waitlistRoute,
 	},
-	{
+	/**{
 		path: '/orders',
 		route: orderRoute,
 	},
